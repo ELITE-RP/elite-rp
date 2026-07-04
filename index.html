@@ -12,7 +12,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background: linear-gradient(135deg, #1a0933 0%, #0d041a 100%);
             color: #ffffff;
@@ -22,7 +21,6 @@
             justify-content: space-between;
             overflow-x: hidden;
         }
-
         /* Шапка сайта (Header) */
         header {
             padding: 20px 50px;
@@ -33,7 +31,6 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(157, 78, 221, 0.2);
         }
-
         .logo {
             font-size: 24px;
             font-weight: 800;
@@ -41,10 +38,41 @@
             letter-spacing: 2px;
             color: #ffffff;
         }
-
         .logo span {
-            color: #9d4edd; /* Фиолетовый акцент */
+            color: #9d4edd;
             text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+        }
+        
+        /* Кнопки авторизации в шапке */
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .auth-btn {
+            background: transparent;
+            border: 2px solid #9d4edd;
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .auth-btn:hover {
+            background: #9d4edd;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.5);
+        }
+        .user-panel {
+            font-weight: 600;
+            color: #e0aaff;
+            display: none;
+        }
+        .logout-link {
+            color: #ff4d4d;
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 10px;
+            font-size: 0.9rem;
         }
 
         /* Главный контент */
@@ -56,12 +84,10 @@
             padding: 40px 20px;
             text-align: center;
         }
-
         .hero-container {
             max-width: 800px;
             animation: fadeIn 1.2s ease-out;
         }
-
         .main-title {
             font-size: 4rem;
             font-weight: 900;
@@ -70,12 +96,10 @@
             letter-spacing: 1px;
             line-height: 1.1;
         }
-
         .main-title span {
             color: #9d4edd;
             text-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
         }
-
         .subtitle {
             font-size: 1.2rem;
             color: #e0aaff;
@@ -83,8 +107,7 @@
             font-weight: 300;
             letter-spacing: 0.5px;
         }
-
-        /* Стильная кнопка скачивания */
+        /* Кнопка скачивания */
         .download-btn {
             display: inline-block;
             padding: 18px 45px;
@@ -100,10 +123,7 @@
             cursor: pointer;
             box-shadow: 0 5px 25px rgba(255, 255, 255, 0.2);
             transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
         }
-
         .download-btn:hover {
             background-color: #9d4edd;
             color: #ffffff;
@@ -111,12 +131,108 @@
             transform: translateY(-3px);
         }
 
-        .download-btn:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+        /* Окна модалок */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(13, 4, 26, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 1000;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-window {
+            background: #1a0933;
+            border: 2px solid rgba(157, 78, 221, 0.4);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.4s ease;
+        }
+        .modal-overlay.active .modal-window {
+            transform: scale(1);
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+        }
+        .modal-window h2 {
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #e0aaff;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 1rem;
+            outline: none;
+        }
+        .input-group input:focus {
+            border-color: #9d4edd;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #9d4edd;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .modal-switch {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+        .modal-switch span {
+            color: #9d4edd;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
         }
 
-        /* Подвал (Footer) */
         footer {
             padding: 20px;
             text-align: center;
@@ -124,35 +240,13 @@
             color: rgba(255, 255, 255, 0.4);
             border-top: 1px solid rgba(157, 78, 221, 0.1);
         }
-
-        /* Анимация появления контента */
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Адаптивность для мобильных телефонов */
         @media (max-width: 768px) {
-            .main-title {
-                font-size: 2.5rem;
-            }
-            .subtitle {
-                font-size: 1rem;
-            }
-            header {
-                padding: 15px 20px;
-                justify-content: center;
-            }
-            .download-btn {
-                padding: 15px 35px;
-                font-size: 1rem;
-            }
+            .main-title { font-size: 2.5rem; }
+            header { padding: 15px 20px; flex-direction: column; gap: 15px; }
         }
     </style>
 </head>
@@ -160,20 +254,174 @@
 
     <header>
         <div class="logo">ELITE <span>RP</span></div>
+        <div class="auth-buttons" id="authButtons">
+            <button class="auth-btn" onclick="openModal('loginModal')">Войти</button>
+            <button class="auth-btn" onclick="openModal('regModal')">Регистрация</button>
+        </div>
+        <div class="user-panel" id="userPanel">
+            Привет, <span id="usernameDisplay" style="color: #ffffff; font-weight: 800;">Игрок</span>! 
+            <span class="logout-link" onclick="logout()">Выйти</span>
+        </div>
     </header>
 
     <main>
         <div class="hero-container">
             <h1 class="main-title">Добро пожаловать на <br><span>ELITE RP</span></h1>
             <p class="subtitle">Погрузись в атмосферу реальной жизни, найди верных друзей и создай свою собственную империю. Твоя история начинается здесь.</p>
-            
             <a href="https://cdn.dragonsrv.com/laas_distribution/n13/1855e553-31c7-4360-8c66-e794b6799ead/ELITE%20RP%20Setup.exe" class="download-btn" download>Скачать Лаунчер</a>
         </div>
     </main>
+
+    <div class="modal-overlay" id="regModal">
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('regModal')">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="regForm" onsubmit="handleRegister(event)">
+                <div class="input-group">
+                    <label>Никнейм в игре</label>
+                    <input type="text" id="regNickname" placeholder="От 3 до 20 букв" required>
+                    <div class="error-msg" id="regNickError">Ник должен быть от 3 до 20 символов!</div>
+                </div>
+                <div class="input-group">
+                    <label>Тип привязки</label>
+                    <select id="contactType" onchange="toggleContactInput()">
+                        <option value="email">Почта (E-mail)</option>
+                        <option value="phone">Телефон</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label id="contactLabel">Почта (E-mail)</label>
+                    <input type="text" id="regContact" placeholder="example@mail.ru" required>
+                </div>
+                <div class="input-group">
+                    <label>Придумайте пароль</label>
+                    <input type="password" id="regPassword" placeholder="Пароль" required>
+                </div>
+                <button type="submit" class="submit-btn">Создать аккаунт</button>
+                <div class="modal-switch">Уже есть аккаунт? <span onclick="switchModal('regModal', 'loginModal')">Войти</span></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Вход</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Никнейм</label>
+                    <input type="text" id="loginNickname" placeholder="Ваш игровой ник" required>
+                </div>
+                <div class="input-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" placeholder="Ваш пароль" required>
+                    <div class="error-msg" id="loginError">Неверный никнейм или пароль!</div>
+                </div>
+                <button type="submit" class="submit-btn">Войти</button>
+                <div class="modal-switch">Нет аккаунта? <span onclick="switchModal('loginModal', 'regModal')">Регистрация</span></div>
+            </form>
+        </div>
+    </div>
 
     <footer>
         &copy; 2026 ELITE RP. Все права защищены.
     </footer>
 
+    <script>
+        // Переключение Почта/Телефон
+        function toggleContactInput() {
+            const type = document.getElementById('contactType').value;
+            const label = document.getElementById('contactLabel');
+            const input = document.getElementById('regContact');
+            if (type === 'email') {
+                label.innerText = 'Почта (E-mail)';
+                input.placeholder = 'example@mail.ru';
+            } else {
+                label.innerText = 'Телефон';
+                input.placeholder = '+7 (999) 999-99-99';
+            }
+        }
+
+        // Модалки
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { 
+            document.getElementById(id).classList.remove('active'); 
+            document.getElementById('regNickError').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
+        }
+        function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => openModal(openId), 200); }
+
+        // СКРИПТ СОХРАНЕНИЯ РЕГИСТРАЦИИ (БЕЗ СЕРВЕРА)
+        function handleRegister(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('regNickname').value.trim();
+            const contact = document.getElementById('regContact').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            // Проверка длины: мин 3, макс 20
+            if (nickname.length < 3 || nickname.length > 20) {
+                document.getElementById('regNickError').style.display = 'block';
+                return;
+            }
+
+            // Достаем старых игроков или создаем чистый список
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+
+            // Если такой ник уже есть
+            if (database[nickname.toLowerCase()]) {
+                alert('Этот никнейм уже зарегистрирован!');
+                return;
+            }
+
+            // Сохраняем в память браузера
+            database[nickname.toLowerCase()] = { name: nickname, contact: contact, pass: password };
+            localStorage.setItem('elite_players', JSON.stringify(database));
+
+            alert('Аккаунт успешно создан!');
+            document.getElementById('regForm').reset();
+            switchModal('regModal', 'loginModal');
+        }
+
+        // СКРИПТ ВХОДА (БЕЗ СЕРВЕРА)
+        function handleLogin(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('loginNickname').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+            const account = database[nickname.toLowerCase()];
+
+            // Проверяем пароль
+            if (account && account.pass === password) {
+                localStorage.setItem('elite_logged_in', account.name);
+                updateUI();
+                closeModal('loginModal');
+                document.getElementById('loginForm').reset();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // Обновление кнопок на экране
+        function updateUI() {
+            const loggedInUser = localStorage.getItem('elite_logged_in');
+            if (loggedInUser) {
+                document.getElementById('authButtons').style.display = 'none';
+                document.getElementById('userPanel').style.display = 'block';
+                document.getElementById('usernameDisplay').innerText = loggedInUser;
+            } else {
+                document.getElementById('authButtons').style.display = 'flex';
+                document.getElementById('userPanel').style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('elite_logged_in');
+            updateUI();
+        }
+
+        // Проверяем статус при открытии файла
+        window.onload = updateUI;
+    </script>
 </body>
 </html>
