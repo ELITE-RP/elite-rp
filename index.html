@@ -60,13 +60,14 @@
             box-shadow: 0 4px 30px rgba(106, 13, 173, 0.03);
         }
 
-        /* [РАСПАШКА: ЛОГОТИП] Можно заменить на <img src="ссылка"> */
+        /* [РАСПАШКА: ЛОГОТИП] Можно заменить текст на <img src="ссылка"> */
         .logo {
             font-size: 24px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--text-dark);
+            cursor: pointer;
         }
         .logo span {
             color: var(--primary);
@@ -106,7 +107,7 @@
             padding-left: 20px;
         }
 
-        /* [РАСПАШКА: ССЫЛКИ СОЦСЕТЕЙ В ШАПКЕ] Меняй '#' на свои группы */
+        /* [РАСПАШКА: ССЫЛКИ СОЦСЕТЕЙ В ШАПКЕ] Меняй '#' внутри href="ссылка" */
         .header-socials a {
             width: 36px;
             height: 36px;
@@ -226,7 +227,7 @@
             font-weight: 500;
         }
 
-        /* [РАСПАШКА: ССЫЛКА НА ЛАУНЧЕР] */
+        /* [РАСПАШКА: ССЫЛКА НА СКАЧИВАНИЕ ЛАУНЧЕРА] */
         .btn-download-hero {
             display: inline-flex;
             align-items: center;
@@ -342,7 +343,7 @@
             margin-bottom: 12px;
         }
         .progress-bar {
-            width: 0%; /* Меняется динамически через JS */
+            width: 0%; 
             height: 100%;
             background: var(--gradient);
             border-radius: 20px;
@@ -696,7 +697,7 @@
                 <div class="step-item">
                     <div class="step-icon">3</div>
                     <h3>Вперед к победам!</h3>
-                    <p>Запускай лаунчер, выбирай первый сервер и создавай свою неповторимую империю.</p>
+                    <p>Запускай лаунчер, выбирай первый сервер и создавай свою неповторимию империю.</p>
                 </div>
             </div>
         </section>
@@ -705,7 +706,7 @@
     <div class="modal-overlay" id="regModal">
         <div class="modal-window">
             <span class="close-modal" onclick="closeModal('regModal')">&times;</span>
-            <h2>Registration</h2>
+            <h2>Регистрация</h2>
             <form id="regForm" onsubmit="startVerification(event)">
                 <div class="input-group">
                     <label>Игровой Никнейм</label>
@@ -789,13 +790,12 @@
         let tempUserData = null;
         let generatedCode = null;
 
-        // --- ДИНАМИЧЕСКИЙ СЧЕТЧИК ОНЛАЙНА ЧЕРЕЗ PUBLIC API ---
+        // --- НАСТРОЙКИ МОНИТОРИНГА СЕРВЕРА ---
         const SERVER_IP = "94.23.168.153";
         const SERVER_PORT = "2325";
 
         async function fetchServerOnline() {
             try {
-                // Используем бесплатный надежный шлюз для парсинга SA-MP данных
                 const response = await fetch(`https://samp-api.ru/api/query?ip=${SERVER_IP}&port=${SERVER_PORT}`);
                 const data = await response.json();
 
@@ -804,10 +804,8 @@
                     const maxPlayers = parseInt(data.maxplayers) || 1000;
                     const percent = Math.min((online / maxPlayers) * 100, 100);
 
-                    // Обновляем главную плашку онлайна в шапке/герое
                     document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
                     
-                    // Обновляем состояние карточки
                     const label = document.getElementById('srv-status');
                     label.innerText = "Активен";
                     label.classList.remove('offline');
@@ -834,12 +832,10 @@
             document.getElementById('srv-text').innerHTML = `Занято мест: <span>0</span> / 0`;
         }
 
-        // Запуск мониторинга при входе + обновление каждые 30 секунд
         fetchServerOnline();
-        setInterval(fetchServerOnline, 30000);
+        setInterval(fetchServerOnline, 30000); // Обновление каждые 30 сек
 
-
-        // --- ЛОГИКА АВТОРИЗАЦИИ И ОКНА ---
+        // --- ЛОГИКА ОКН И ЛОКАЛЬНОЙ ДАТАБАЗЫ ---
         function toggleContactInput() {
             const type = document.getElementById('contactType').value;
             const label = document.getElementById('contactLabel');
