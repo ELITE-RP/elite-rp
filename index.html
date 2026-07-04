@@ -276,7 +276,7 @@
         <div class="modal-window">
             <span class="close-modal" onclick="closeModal('regModal')">&times;</span>
             <h2>Регистрация</h2>
-            <form id="regForm" onsubmit="handleRegister(event)">
+            <form id="regForm" onsubmit="startVerification(event)">
                 <div class="input-group">
                     <label>Никнейм в игре</label>
                     <input type="text" id="regNickname" placeholder="От 3 до 20 букв" required>
@@ -297,8 +297,26 @@
                     <label>Придумайте пароль</label>
                     <input type="password" id="regPassword" placeholder="Пароль" required>
                 </div>
-                <button type="submit" class="submit-btn">Создать аккаунт</button>
+                <button type="submit" class="submit-btn">Получить код</button>
                 <div class="modal-switch">Уже есть аккаунт? <span onclick="switchModal('regModal', 'loginModal')">Войти</span></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="verifyModal">
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('verifyModal')">&times;</span>
+            <h2>Подтверждение</h2>
+            <p style="font-size: 0.9rem; color: #e0aaff; margin-bottom: 20px; text-align: center;" id="verifyText">
+                Мы отправили 6-значный код. Введите его ниже для завершения регистрации.
+            </p>
+            <form id="verifyForm" onsubmit="completeRegister(event)">
+                <div class="input-group">
+                    <label>6-значный код</label>
+                    <input type="text" id="verifyCodeInput" placeholder="000000" maxlength="6" required style="text-align: center; letter-spacing: 5px; font-size: 1.3rem;">
+                    <div class="error-msg" id="verifyError">Неверный код подтверждения!</div>
+                </div>
+                <button type="submit" class="submit-btn">Подтвердить и создать</button>
             </form>
         </div>
     </div>
@@ -328,6 +346,10 @@
     </footer>
 
     <script>
+        // Временные переменные для хранения данных до ввода правильного кода
+        let tempUserData = null;
+        let generatedCode = null;
+
         // Переключение Почта/Телефон
         function toggleContactInput() {
             const type = document.getElementById('contactType').value;
@@ -348,13 +370,15 @@
             document.getElementById(id).classList.remove('active'); 
             document.getElementById('regNickError').style.display = 'none';
             document.getElementById('loginError').style.display = 'none';
+            if(document.getElementById('verifyError')) document.getElementById('verifyError').style.display = 'none';
         }
         function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => openModal(openId), 200); }
 
-        // СКРИПТ СОХРАНЕНИЯ РЕГИСТРАЦИИ (БЕЗ СЕРВЕРА)
-        function handleRegister(e) {
+        // ЭТАП 1: Проверка данных и генерация 6-значного кода
+        function startVerification(e) {
             e.preventDefault();
             const nickname = document.getElementById('regNickname').value.trim();
+            const contactType = document.getElementById('contactType').value;
             const contact = document.getElementById('regContact').value.trim();
             const password = document.getElementById('regPassword').value;
 
@@ -363,26 +387,59 @@
                 document.getElementById('regNickError').style.display = 'block';
                 return;
             }
+            document.getElementById('regNickError').style.display = 'none';
 
-            // Достаем старых игроков или создаем чистый список
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-
-            // Если такой ник уже есть
             if (database[nickname.toLowerCase()]) {
                 alert('Этот никнейм уже зарегистрирован!');
                 return;
             }
 
-            // Сохраняем в память браузера
-            database[nickname.toLowerCase()] = { name: nickname, contact: contact, pass: password };
-            localStorage.setItem('elite_players', JSON.stringify(database));
+            // Генерируем случайный 6-значный код от 100000 до 999999
+            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-            alert('Аккаунт успешно создан!');
-            document.getElementById('regForm').reset();
-            switchModal('regModal', 'loginModal');
+            // Временно сохраняем данные игрока
+            tempUserData = { name: nickname, contact: contact, pass: password };
+
+            // Имитируем отправку кода — выводим в окно браузера
+            const destination = contactType === 'email' ? 'почту' : 'телефон';
+            alert(`[Имитация СМС/Email] Код подтверждения для ELITE RP: ${generatedCode}`);
+
+            // Переключаем текст в окне подтверждения и открываем его
+            document.getElementById('verifyText').innerText = `Мы отправили 6-значный код на ваш ${contactType === 'email' ? 'E-mail' : 'номер телефона'}: ${contact}`;
+            switchModal('regModal', 'verifyModal');
         }
 
-        // СКРИПТ ВХОДА (БЕЗ СЕРВЕРА)
+        // ЭТАП 2: Проверка введенного кода и создание аккаунта
+        function completeRegister(e) {
+            e.preventDefault();
+            const userCode = document.getElementById('verifyCodeInput').value.trim();
+            const verifyError = document.getElementById('verifyError');
+
+            // Если код не совпадает, не пускаем дальше
+            if (userCode !== generatedCode) {
+                verifyError.style.display = 'block';
+                return;
+            }
+            verifyError.style.display = 'none';
+
+            // Если код верный — записываем аккаунт в основную базу
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+            database[tempUserData.name.toLowerCase()] = tempUserData;
+            localStorage.setItem('elite_players', JSON.stringify(database));
+
+            alert('Аккаунт успешно создан и подтвержден!');
+            document.getElementById('regForm').reset();
+            document.getElementById('verifyForm').reset();
+            
+            // Сбрасываем временные данные
+            tempUserData = null;
+            generatedCode = null;
+
+            switchModal('verifyModal', 'loginModal');
+        }
+
+        // СКРИПТ ВХОДА
         function handleLogin(e) {
             e.preventDefault();
             const nickname = document.getElementById('loginNickname').value.trim();
@@ -391,7 +448,6 @@
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
             const account = database[nickname.toLowerCase()];
 
-            // Проверяем пароль
             if (account && account.pass === password) {
                 localStorage.setItem('elite_logged_in', account.name);
                 updateUI();
@@ -402,7 +458,6 @@
             }
         }
 
-        // Обновление кнопок на экране
         function updateUI() {
             const loggedInUser = localStorage.getItem('elite_logged_in');
             if (loggedInUser) {
@@ -420,7 +475,6 @@
             updateUI();
         }
 
-        // Проверяем статус при открытии файла
         window.onload = updateUI;
     </script>
 </body>
