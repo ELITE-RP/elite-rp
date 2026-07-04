@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELITE RP — Начни игру прямо сейчас</title>
+    <style>
+        /* Общие стили для всего сайта */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a0933 0%, #0d041a 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Шапка сайта (Header) */
+        header {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 9, 51, 0.5);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        .logo span {
+            color: #9d4edd; /* Фиолетовый акцент */
+            text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+        }
+
+        /* Главный контент */
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 800px;
+            animation: fadeIn 1.2s ease-out;
+        }
+
+        .main-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.1;
+        }
+
+        .main-title span {
+            color: #9d4edd;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.4);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #e0aaff;
+            margin-bottom: 40px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* Стильная кнопка скачивания */
+        .download-btn {
+            display: inline-block;
+            padding: 18px 45px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1a0933;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn:hover {
+            background-color: #9d4edd;
+            color: #ffffff;
+            box-shadow: 0 8px 30px rgba(157, 78, 221, 0.6);
+            transform: translateY(-3px);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+        }
+
+        /* Подвал (Footer) */
+        footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            border-top: 1px solid rgba(157, 78, 221, 0.1);
+        }
+
+        /* Анимация появления контента */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Адаптивность для мобильных телефонов */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+            }
+            header {
+                padding: 15px 20px;
+                justify-content: center;
+            }
+            .download-btn {
+                padding: 15px 35px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">ELITE <span>RP</span></div>
+    </header>
+
+    <main>
+        <div class="hero-container">
+            <h1 class="main-title">Добро пожаловать на <br><span>ELITE RP</span></h1>
+            <p class="subtitle">Погрузись в атмосферу реальной жизни, найди верных друзей и создай свою собственную империю. Твоя история начинается здесь.</p>
+            
+            <a href="https://cdn.dragonsrv.com/laas_distribution/n13/1855e553-31c7-4360-8c66-e794b6799ead/ELITE%20RP%20Setup.exe" class="download-btn" download>Скачать Лаунчер</a>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2026 ELITE RP. Все права защищены.
+    </footer>
+
+</body>
+</html>
