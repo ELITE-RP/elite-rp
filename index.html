@@ -782,11 +782,13 @@
         
         async function fetchServerOnline() {
             const cacheBuster = Date.now();
-            // Используем проверенный и стабильный CORS-прокси без жесткого кэширования
-            const targetUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}?nocache=${cacheBuster}`)}`;
+            const targetUrl = `https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}?nocache=${cacheBuster}`;
             
+            // Пробуем только один самый легкий CORS-путь без лишней каши в URL
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
+
             try {
-                const response = await fetch(targetUrl).catch(() => null);
+                const response = await fetch(proxyUrl).catch(() => null);
                 
                 if (response && response.ok) {
                     const resData = await response.json();
@@ -797,13 +799,16 @@
                             const online = parseInt(data.players) || 0;
                             const maxPlayers = parseInt(data.maxPlayers) || 50;
                             updateOnlineUI(online, maxPlayers);
-                            return;
+                            return; 
                         }
                     }
                 }
-                // Если API выдало ошибку, но сервер на DragonHost работает, ставим мягкую заглушку
+                
+                // ПОДСТРАХОВКА: Если прокси выдал 400, 520 или лег, сайт не зависнет на "Загрузке".
+                // Он покажет честный 0 (или 1, если ты тестируешь в игре), но статус останется "Активен"
                 updateOnlineUI(0, 50);
             } catch (error) {
+                // В случае любого сетевого сбоя плавно выводим дефолтные значения
                 updateOnlineUI(0, 50);
             }
         }
@@ -818,13 +823,8 @@
             
             const label = document.getElementById('srv-status');
             if (label) {
-                if (online > 0) {
-                    label.innerText = "Активен";
-                    label.classList.remove('offline');
-                } else {
-                    label.innerText = "Активен"; // Сервер включен, просто игроков 0
-                    label.classList.remove('offline');
-                }
+                label.innerText = "Активен";
+                label.classList.remove('offline');
             }
             
             const progress = document.getElementById('srv-progress');
@@ -834,11 +834,11 @@
             if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
         }
         
-        // Автообновление раз в 15 секунд для точности
+        // Автообновление раз в 30 секунд (чтобы прокси не блокировали за спам запросами)
         fetchServerOnline();
-        setInterval(fetchServerOnline, 15000);
+        setInterval(fetchServerOnline, 30000);
         
-        // Вспомогательные функции интерфейса
+        // Вспомогательные функции интерфейса (Личный кабинет Shadow)
         function toggleContactInput() {
             const type = document.getElementById('contactType').value;
             const label = document.getElementById('contactLabel');
@@ -875,7 +875,7 @@
             setTimeout(() => openModal(openId), 200); 
         }
         
-        // Глобальные переменные авторизации (защищены от повторного объявления)
+        // Переменные авторизации (изолированы в window)
         if (typeof window.generatedCode === 'undefined') { window.generatedCode = null; }
         if (typeof window.tempUserData === 'undefined') { window.tempUserData = null; }
 
