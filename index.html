@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELITE RP — Начни играть прямо сейчас</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -27,842 +27,936 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Montserrat', sans-serif;
+            scroll-behavior: smooth;
         }
 
         body {
             background-color: var(--bg-main);
             color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow-x: hidden;
-            line-height: 1.6;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+        a { text-decoration: none; color: inherit; }
 
         /* ==========================================================================
-           2. НАВИГАЦИЯ (ШАПКА САЙТА)
+           2. ШАПКА САЙТА (HEADER)
            ========================================================================== */
         header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border-color);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        nav {
+            padding: 18px 6%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 80px;
+            box-shadow: 0 4px 30px rgba(106, 13, 173, 0.03);
         }
 
         .logo {
             font-size: 24px;
-            font-weight: 800;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 1.5px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+        .logo span {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary-glow);
         }
 
-        .nav-links {
+        nav {
             display: flex;
-            gap: 30px;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 25px;
             list-style: none;
         }
 
-        .nav-links a {
-            text-decoration: none;
+        .nav-menu a {
+            font-weight: 700;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            font-weight: 600;
-            font-size: 14px;
             text-transform: uppercase;
-            transition: color 0.3s ease;
+            letter-spacing: 0.5px;
+            transition: color 0.3s;
         }
 
-        .nav-links a:hover, .nav-links a.active {
+        .nav-menu a:hover {
             color: var(--primary);
         }
 
-        .social-icons {
+        .header-socials {
             display: flex;
-            gap: 15px;
-        }
-
-        .social-icons a {
-            color: var(--primary);
-            font-size: 18px;
-            transition: transform 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Кнопки авторизации в шапке */
-        .header-auth {
-            display: flex;
+            gap: 12px;
             align-items: center;
-            gap: 15px;
+            border-left: 2px solid var(--border-color);
+            padding-left: 20px;
         }
 
-        .btn-cabinet {
-            background: var(--gradient);
-            color: white !important;
-            padding: 10px 22px;
-            border-radius: 8px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 13px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 15px var(--primary-glow);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-cabinet:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--primary-glow);
-        }
-
-        /* Панель авторизованного юзера */
-        .user-panel {
-            display: none;
-            background: rgba(138, 43, 226, 0.08);
-            padding: 6px 16px;
-            border-radius: 30px;
-            border: 1px solid rgba(138, 43, 226, 0.2);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 14px;
-        }
-
-        .user-avatar {
-            width: 28px;
-            height: 28px;
-            background: var(--gradient);
-            color: white;
+        .header-socials a {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .header-socials a:hover {
+            background: var(--gradient);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px var(--primary-glow);
         }
 
-        .btn-logout {
-            background: none;
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-lk {
+            background: var(--gradient);
+            color: #ffffff;
             border: none;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .btn-lk:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+        }
+
+        .user-panel {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            display: none;
+        }
+        .logout-link {
             color: #ff4d4d;
             cursor: pointer;
-            font-size: 14px;
-            margin-left: 5px;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-logout:hover {
-            transform: scale(1.1);
+            font-weight: 600;
+            text-decoration: underline;
+            margin-left: 8px;
         }
 
         /* ==========================================================================
-           3. ГЛАВНЫЙ ЭКРАН (HERO SECTION) И СТАТУС СЕРВЕРА
+           3. ГЛАВНЫЙ БАННЕР (HERO)
            ========================================================================== */
         .hero {
-            padding: 160px 0 80px 0;
+            padding-top: 140px;
+            padding-bottom: 80px;
+            padding-left: 6%;
+            padding-right: 6%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 40px;
+            min-height: 85vh;
+            background: radial-gradient(circle at 80% 20%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
         }
 
-        .hero-content {
-            flex: 1;
+        .hero-left {
             max-width: 600px;
         }
 
-        /* Плашка общего онлайна */
-        .total-online {
+        .hero-online-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(46, 204, 113, 0.1);
-            border: 1px solid rgba(46, 204, 113, 0.2);
-            color: #27ae60;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 13px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 30px;
             font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .hero-online-badge i { color: #2bc473; animation: pulse 2s infinite; }
+        .hero-online-badge i.offline { color: #ff4d4d; }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            color: var(--text-dark);
             margin-bottom: 25px;
         }
-
-        .total-online i {
-            font-size: 10px;
-            animation: pulse 2s infinite;
+        .hero h1 span {
+            color: var(--primary);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .total-online i.offline {
-            color: #e74c3c !important;
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-weight: 500;
         }
+
+        .btn-download-hero {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gradient);
+            color: #ffffff;
+            padding: 20px 45px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.35);
+            transition: all 0.4s ease;
+        }
+        .btn-download-hero:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.5);
+        }
+
+        .hero-right {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .hero-img {
+            max-width: 100%;
+            height: auto;
+            max-height: 60vh;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 30px rgba(138, 43, 226, 0.15));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* ==========================================================================
+           4. МОНИТОРИНГ СЕРВЕРОВ
+           ========================================================================== */
+        .servers {
+            padding: 80px 6%;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-head {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 50px auto;
+        }
+        .section-head h2 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        .section-head h2 span { color: var(--primary); }
+        .section-head p { color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
+
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .server-card {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .server-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.05);
+        }
+
+        .server-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .server-title { font-weight: 800; font-size: 1.15rem; color: var(--text-dark); }
+        
+        .server-label {
+            background: rgba(43, 196, 115, 0.1);
+            color: #2bc473;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .server-label.offline {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(138, 43, 226, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        .progress-bar {
+            width: 0%; 
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 20px;
+            transition: width 1s ease-out;
+        }
+
+        .server-online-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .server-online-text span { color: var(--text-dark); font-weight: 800; }
+
+        /* ==========================================================================
+           5. БЛОК "КАК НАЧАТЬ ИГРАТЬ"
+           ========================================================================== */
+        .how-to {
+            padding: 90px 6%;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 45px 35px;
+            text-align: center;
+            box-shadow: 0 10px 35px rgba(106, 13, 173, 0.02);
+            transition: all 0.3s;
+        }
+        .step-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.06);
+        }
+
+        .step-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(138, 43, 226, 0.07);
+            color: var(--primary);
+            font-size: 1.6rem;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px auto;
+            font-weight: 900;
+        }
+
+        .step-item h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .step-item p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* ==========================================================================
+           6. МОДАЛЬНЫЕ ОКНА
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(30, 17, 53, 0.35);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 2000;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-window {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 45px 40px;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            transform: scale(0.85);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 60px rgba(30, 17, 53, 0.12);
+        }
+        .modal-overlay.active .modal-window {
+            transform: scale(1);
+        }
+        .close-modal {
+            position: absolute;
+            top: 22px;
+            right: 26px;
+            font-size: 26px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: var(--text-dark); }
+
+        .modal-window h2 {
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 22px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 15px 18px;
+            background: var(--bg-main);
+            border: 2px solid transparent;
+            border-radius: 14px;
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.05);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.2);
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.35);
+        }
+        .modal-switch {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-align: center;
+        }
+        .modal-switch span {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 700;
+        }
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* ==========================================================================
+           7. ПОДВАЛ САЙТА (FOOTER)
+           ========================================================================== */
+        footer {
+            background: var(--bg-card);
+            padding: 40px 6%;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        .footer-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        .footer-socials-bottom {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-social-footer {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .btn-social-footer.vk { background: rgba(0, 119, 255, 0.08); color: #0077ff; }
+        .btn-social-footer.vk:hover { background: #0077ff; color: #ffffff; }
+        
+        .btn-social-footer.dc { background: rgba(88, 101, 242, 0.08); color: #5865f2; }
+        .btn-social-footer.dc:hover { background: #5865f2; color: #ffffff; }
 
         @keyframes pulse {
             0% { opacity: 0.4; }
             50% { opacity: 1; }
             100% { opacity: 0.4; }
         }
-
-        .hero-content h1 {
-            font-size: 48px;
-            font-weight: 800;
-            text-transform: uppercase;
-            line-height: 1.1;
-            margin-bottom: 20px;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
         }
 
-        .hero-content h1 span {
-            color: var(--primary);
-        }
-
-        .hero-content p {
-            color: var(--text-muted);
-            font-size: 16px;
-            margin-bottom: 35px;
-        }
-
-        .btn-download {
-            background: var(--gradient);
-            color: white;
-            text-decoration: none;
-            padding: 16px 35px;
-            border-radius: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 25px var(--primary-glow);
-            transition: all 0.3s ease;
-        }
-
-        .btn-download:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px var(--primary-glow);
-        }
-
-        .hero-image {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            position: relative;
-        }
-
-        .hero-image img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.1);
-        }
-        /* ==========================================================================
-           4. БЛОК МОНИТОРИНГА КАРТОЧЕК СЕРВЕРОВ
-           ========================================================================== */
-        .servers-section {
-            padding: 60px 0;
-        }
-
-        .section-title {
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 40px;
-            letter-spacing: 1px;
-        }
-
-        .servers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .server-card {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .server-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--gradient);
-        }
-
-        .server-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .server-name {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .server-status {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            background: rgba(46, 204, 113, 0.1);
-            color: #27ae60;
-            padding: 4px 10px;
-            border-radius: 6px;
-        }
-
-        .server-status.offline {
-            background: rgba(231, 76, 60, 0.1) !important;
-            color: #e74c3c !important;
-        }
-
-        .progress-container {
-            background: #f0edf5;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            background: var(--gradient);
-            width: 0%;
-            height: 100%;
-            border-radius: 4px;
-            transition: width 1s ease;
-        }
-
-        .server-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .server-meta span {
-            color: var(--text-dark);
-            font-weight: 700;
-        }
-
-        /* ==========================================================================
-           5. МОДАЛЬНЫЕ ОКНА (АВТОРИЗАЦИЯ, РЕГИСТРАЦИЯ, ПОДТВЕРЖДЕНИЕ)
-           ========================================================================== */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(30, 17, 53, 0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-box {
-            background: var(--bg-card);
-            width: 100%;
-            max-width: 420px;
-            border-radius: 20px;
-            padding: 40px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-            position: relative;
-            transform: scale(0.9);
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.active .modal-box {
-            transform: scale(1);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 20px; right: 20px;
-            background: none; border: none;
-            color: var(--text-muted);
-            font-size: 20px; cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .modal-close:hover {
-            color: var(--primary);
-        }
-
-        .modal-box h3 {
-            font-size: 24px;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 25px;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            height: 50px;
-            background: var(--bg-main);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 0 15px;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-dark);
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--primary);
-            background: #fff;
-            box-shadow: 0 0 10px rgba(138, 43, 226, 0.1);
-        }
-
-        .btn-submit {
-            width: 100%;
-            height: 52px;
-            background: var(--gradient);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 5px 15px var(--primary-glow);
-            transition: all 0.3s ease;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--primary-glow);
-        }
-
-        .modal-footer {
-            margin-top: 25px;
-            text-align: center;
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .modal-footer a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .error-message {
-            color: #ff4d4d;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 5px;
-            display: none;
+        @media (max-width: 992px) {
+            header { padding: 15px 4%; }
+            nav { display: none; }
+            .hero { flex-direction: column; text-align: center; padding-top: 120px; gap: 40px; }
+            .hero-left { max-width: 100%; display: flex; flex-direction: column; align-items: center; }
+            .hero h1 { font-size: 2.8rem; }
+            .hero-right { display: none; }
+            .footer-wrap { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="container">
-            <nav>
-                <div class="logo">
-                    <i class="fa-solid fa-bolt"></i> ELITE RP
-                </div>
-                <ul class="nav-links">
-                    <li><a href="#" class="active">Главная</a></li>
-                    <li><a href="#">Мониторинг</a></li>
-                    <li><a href="#">Как начать</a></li>
-                </ul>
-                <div class="header-auth">
-                    <div class="social-icons">
-                        <a href="#"><i class="fa-brands fa-discord"></i></a>
-                        <a href="#"><i class="fa-brands fa-vk"></i></a>
-                    </div>
-                    
-                    <div id="authButtons">
-                        <button class="btn-cabinet" onclick="openModal('loginModal')">
-                            <i class="fa-solid fa-user"></i> Кабинет
-                        </button>
-                    </div>
-                    <div id="userPanel" class="user-panel">
-                        <div class="user-info">
-                            <div class="user-avatar"><i class="fa-solid fa-user-shield"></i></div>
-                            <span id="usernameDisplay">Player</span>
-                            <button class="btn-logout" onclick="logout()" title="Выйти"><i class="fa-solid fa-right-from-bracket"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </nav>
+        <div class="logo" onclick="window.location.reload()">ELITE <span>RP</span></div>
+        <nav>
+            <ul class="nav-menu">
+                <li><a href="#about">Главная</a></li>
+                <li><a href="#servers">Мониторинг</a></li>
+                <li><a href="#how-to">Как начать</a></li>
+            </ul>
+            <div class="header-socials">
+                <a href="https://vk.ru/club240055100" target="_blank" title="Мы ВКонтакте"><i class="fab fa-vk"></i></a>
+                <a href="https://discord.gg/C2795ggDwa" target="_blank" title="Наш Дискорд"><i class="fab fa-discord"></i></a>
+            </div>
+        </nav>
+        <div class="header-right">
+            <div id="authButtons">
+                <button class="btn-lk" onclick="openModal('loginModal')"><i class="fa-solid fa-user-shield" style="margin-right: 8px;"></i>Кабинет</button>
+            </div>
+            <div class="user-panel" id="userPanel">
+                <i class="fa-solid fa-user" style="color: var(--primary); margin-right: 5px;"></i> <span id="usernameDisplay">Игрок</span>
+                <span class="logout-link" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></span>
+            </div>
         </div>
     </header>
-    <main class="container">
+
+    <main id="about">
         <section class="hero">
-            <div class="hero-content">
-                <div class="total-online" id="total-online-badge">
+            <div class="hero-left">
+                <div class="hero-online-badge" id="total-online-badge">
                     <i class="fa-solid fa-circle"></i> Загрузка онлайна...
                 </div>
-                <h1>ELITE RP<br><span>Начни свою игру</span></h1>
+                 <h1>ELITE <span>RP</span><br>Начни свою игру</h1>
                 <p>Добро пожаловать на масштабный мультиплеерный проект. Тебя ждет продвинутая экономика, проработанный игровой мод, сотни видов крутого транспорта, недвижимость и бесконечные возможности для реализации любых ролевых сценариев.</p>
-                <a href="#" class="btn-download">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Скачать лаунчер
+                <a href="https://cdn.dragonsrv.com/laas_distribution/n13/1855e553-31c7-4360-8c66-e794b6799ead/ELITE%20RP%20Setup.exe" class="btn-download-hero" download>
+                    <i class="fa-solid fa-download"></i> Скачать Лаунчер
                 </a>
             </div>
-            <div class="hero-image">
-                <img src="https://via.placeholder.com/500x300/6a0dad/ffffff?text=ELITE+RP+UPDATE" alt="Еженедельное Обновление">
+            <div class="hero-right">
+                <img src="https://i.imgur.com/gaNzGhb.png" alt="Персонаж ELITE RP" class="hero-img" onerror="this.src='https://i.imgur.com/gaNzGhb.png'">
             </div>
         </section>
 
-        <section class="servers-section">
-            <h2 class="section-title">Игровые серверы</h2>
+        <section class="servers" id="servers">
+            <div class="section-head">
+                <h2>Игровые <span>Серверы</span></h2>
+                <p>Выбирай любой сервер и начинай играть вместе со своими друзьями прямо сейчас</p>
+            </div>
             <div class="servers-grid">
                 <div class="server-card">
-                    <div class="server-header">
-                        <div class="server-name">ELITE RP | Server 01</div>
-                        <div class="server-status" id="srv-status">Загрузка...</div>
+                    <div class="server-info">
+                        <span class="server-title">ELITE RP | Server #1</span>
+                        <span class="server-label" id="srv-status">Загрузка</span>
                     </div>
                     <div class="progress-container">
                         <div class="progress-bar" id="srv-progress"></div>
                     </div>
-                    <div class="server-meta">
-                        <div id="srv-text">Игроков: <span>0</span> / 50</div>
-                        <div>CRMP Mode</div>
-                    </div>
+                    <div class="server-online-text" id="srv-text">Игроков: <span>...</span> / ...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-to" id="how-to">
+            <div class="section-head">
+                <h2>Как начать <span>Играть</span>?</h2>
+                <p>Всего 3 простых шага отделяют тебя от погружения в виртуальный мир</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-item">
+                    <div class="step-icon">1</div>
+                    <h3>Загрузка лаунчера</h3>
+                    <p>Загрузи наш официальный лаунчер с сайта. Установка займет всего пару мгновений.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">2</div>
+                    <h3>Создание аккаунта</h3>
+                    <p>Пройди простую регистрацию ника в личном кабинете с кодом безопасности.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">3</div>
+                    <h3>Вперед к победам!</h3>
+                    <p>Запускай лаунчер, выбирай первый сервер и создавай свою неповторимую империю.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <div class="modal-overlay" id="loginModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
-            <h3>Вход в кабинет</h3>
-            <form id="loginForm" onsubmit="handleLogin(e)">
-                <div class="form-group">
-                    <label>Игровой Никнейм</label>
-                    <input type="text" id="loginNickname" placeholder="Shadow_Elite" required>
-                </div>
-                <div class="form-group">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required>
-                    <div class="error-message" id="loginError">Неверный никнейм или пароль!</div>
-                </div>
-                <button type="submit" class="btn-submit">Войти в аккаунт</button>
-            </form>
-            <div class="modal-footer">
-                Еще нет аккаунта? <a href="#" onclick="switchModal('loginModal', 'regModal')">Создать аккаунт</a>
-            </div>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="regModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="closeModal('regModal')">&times;</button>
-            <h3>Регистрация</h3>
-            <form id="regForm" onsubmit="startVerification(e)">
-                <div class="form-group">
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('regModal')">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="regForm" onsubmit="startVerification(event)">
+                <div class="input-group">
                     <label>Игровой Никнейм</label>
-                    <input type="text" id="regNickname" placeholder="Shadow_Elite" required>
-                    <div class="error-message" id="regNickError">Ник должен быть от 3 до 20 символов!</div>
+                    <input type="text" id="regNickname" placeholder="Например: Nick_Name" required>
+                    <div class="error-msg" id="regNickError">Ник должен содержать от 3 до 20 букв!</div>
                 </div>
-                <div class="form-group">
-                    <label>Способ подтверждения</label>
+                <div class="input-group">
+                    <label>Метод привязки</label>
                     <select id="contactType" onchange="toggleContactInput()">
-                        <option value="email">E-mail адрес</option>
-                        <option value="phone">Номер телефона</option>
+                        <option value="email">Электронная почта</option>
+                        <option value="phone">Мобильный телефон</option>
                     </select>
                 </div>
-                <div class="form-group">
+                <div class="input-group">
                     <label id="contactLabel">Электронная почта</label>
                     <input type="text" id="regContact" placeholder="example@mail.ru" required>
                 </div>
-                <div class="form-group">
-                    <label>Придумайте Пароль</label>
+                <div class="input-group">
+                    <label>Придумайте пароль</label>
                     <input type="password" id="regPassword" placeholder="••••••••" required>
                 </div>
-                <button type="submit" class="btn-submit">Получить код</button>
+                <button type="submit" class="submit-btn">Получить код защиты</button>
+                <div class="modal-switch">Есть игровой профиль? <span onclick="switchModal('regModal', 'loginModal')">Авторизоваться</span></div>
             </form>
-            <div class="modal-footer">
-                Уже зарегистрированы? <a href="#" onclick="switchModal('regModal', 'loginModal')">Войти в кабинет</a>
-            </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="verifyModal">
-        <div class="modal-box">
-            <button class="modal-close" onclick="closeModal('verifyModal')">&times;</button>
-            <h3>Подтверждение</h3>
-            <p id="verifyText" style="font-size:14px; color:var(--text-muted); text-align:center; margin-bottom:20px; font-weight:600;"></p>
-            <form id="verifyForm" onsubmit="completeRegister(e)">
-                <div class="form-group">
-                    <label>Введите 6-значный код</label>
-                    <input type="text" id="verifyCodeInput" placeholder="123456" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:4px;" required>
-                    <div class="error-message" id="verifyError">Введен неверный код подтверждения!</div>
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('verifyModal')">&times;</span>
+            <h2>Безопасность</h2>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; text-align: center; font-weight: 500;" id="verifyText">
+                Код авторизации выслан на указанные реквизиты.
+            </p>
+            <form id="verifyForm" onsubmit="completeRegister(event)">
+                <div class="input-group">
+                    <label>6-значный код подтверждения</label>
+                    <input type="text" id="verifyCodeInput" placeholder="000000" maxlength="6" required style="text-align: center; letter-spacing: 6px; font-size: 1.4rem; background: #ffffff; border: 2px solid var(--primary);">
+                    <div class="error-msg" id="verifyError">Указан неверный секретный код!</div>
                 </div>
-                <button type="submit" class="btn-submit">Завершить регистрацию</button>
+                <button type="submit" class="submit-btn">Завершить регистрацию</button>
             </form>
         </div>
     </div>
 
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-window">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Авторизация</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label>Ваш Никнейм</label>
+                    <input type="text" id="loginNickname" placeholder="Введи ник" required>
+                </div>
+                <div class="input-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" placeholder="Введи пароль" required>
+                    <div class="error-msg" id="loginError">Неправильный никнейм или секретный пароль!</div>
+                </div>
+                <button type="submit" class="submit-btn">Войти в кабинет</button>
+                <div class="modal-switch">Впервые у нас? <span onclick="switchModal('loginModal', 'regModal')">Зарегистрироваться</span></div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-wrap">
+            <div class="footer-info">
+                <div class="logo" style="margin-bottom: 10px; font-size: 20px;">ELITE <span>RP</span></div>
+                <p class="footer-text">&copy; 2026 ELITE RP. Все права защищены. Разработано для фанатов качественной ролевой игры.</p>
+            </div>
+            <div class="footer-socials-bottom">
+                <a href="https://vk.ru/club240055100" target="_blank" class="btn-social-footer vk"><i class="fab fa-vk"></i> Наша группа ВК</a>
+                <a href="https://discord.gg/C2795ggDwa" target="_blank" class="btn-social-footer dc"><i class="fab fa-discord"></i> Наш Discord</a>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Перехват событий отправки форм (чтобы страница не обновлялась при сабмите)
-        document.getElementById('loginForm').addEventListener('submit', function(e) { handleLogin(e); });
-        document.getElementById('regForm').addEventListener('submit', function(e) { startVerification(e); });
-        document.getElementById('verifyForm').addEventListener('submit', function(e) { completeRegister(e); });
-
-        // ==========================================
-        // А. ДИНАМИЧЕСКИЙ МОНИТОРИНГ ОНЛАЙНА
-        // ==========================================
-        async function fetchServerOnline() {
-            try {
-                // Подтягиваем именно твой файл "онлайн.json" с защитой от кэша браузера
-                const response = await fetch(`./онлайн.json?t=${Date.now()}`).catch(() => null);
-                if (response && response.ok) {
-                    const data = await response.json();
-                    if (data && data.players !== undefined) {
-                        const online = parseInt(data.players) || 0;
-                        const maxPlayers = parseInt(data.maxPlayers) || 50;
-                        const status = data.status || "Активен";
-                        
-                        updateOnlineUI(online, maxPlayers, status);
-                        return;
-                    }
-                }
-                updateOnlineUI(0, 50, "Активен");
-            } catch (error) {
-                updateOnlineUI(0, 50, "Активен");
-            }
-        }
-
-        function updateOnlineUI(online, maxPlayers, status) {
-            const percent = Math.min((online / maxPlayers) * 100, 100);
-            
-            const badge = document.getElementById('total-online-badge');
-            if (badge) {
-                if (status === 'Выключен') {
-                    badge.innerHTML = `<i class="fa-solid fa-circle offline"></i> Проект выключен`;
-                    badge.style.color = '#e74c3c';
-                    badge.style.background = 'rgba(231, 76, 60, 0.1)';
-                    badge.style.borderColor = 'rgba(231, 76, 60, 0.2)';
-                } else {
-                    badge.innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
-                    badge.style.color = '#27ae60';
-                    badge.style.background = 'rgba(46, 204, 113, 0.1)';
-                    badge.style.borderColor = 'rgba(46, 204, 113, 0.2)';
+        let tempUserData = null;
+        let generatedCode = null;
+<script>
+    // ==========================================
+    // 1. МОНИТОРИНГ ОНЛАЙНА ИЗ JSON
+    // ==========================================
+    async function fetchServerOnline() {
+        try {
+            const response = await fetch(`./online.json?t=${Date.now()}`).catch(() => null);
+            if (response && response.ok) {
+                const data = await response.json();
+                if (data && data.players !== undefined) {
+                    const online = parseInt(data.players) || 0;
+                    const maxPlayers = parseInt(data.maxPlayers) || 50;
+                    const status = data.status || "Активен";
+                    
+                    updateOnlineUI(online, maxPlayers, status);
+                    return;
                 }
             }
-            
-            const label = document.getElementById('srv-status');
-            if (label) {
-                label.innerText = status;
-                if (status === 'Выключен') {
-                    label.classList.add('offline');
-                } else {
-                    label.classList.remove('offline');
-                }
-            }
-            
-            const progress = document.getElementById('srv-progress');
-            if (progress) progress.style.width = `${percent}%`;
-            
-            const text = document.getElementById('srv-text');
-            if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+            updateOnlineUI(0, 50, "Активен");
+        } catch (error) {
+            updateOnlineUI(0, 50, "Активен");
         }
-        
-        // Интервал обновления онлайна (раз в 15 секунд)
-        fetchServerOnline();
-        setInterval(fetchServerOnline, 15000);
+    }
 
-        // ==========================================
-        // Б. УПРАВЛЕНИЕ ОКНАМИ И МОДАЛКАМИ
-        // ==========================================
-        function openModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.add('active'); 
+    function updateOnlineUI(online, maxPlayers, status) {
+        const percent = Math.min((online / maxPlayers) * 100, 100);
+        
+        const badge = document.getElementById('total-online-badge');
+        if (badge) {
+            badge.innerHTML = `<i class="fa-solid fa-circle ${status === 'Выключен' ? 'offline' : ''}"></i> Общий онлайн проекта: ${online} игроков`;
         }
         
-        function closeModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('active'); 
-                const nickErr = document.getElementById('regNickError');
-                const logErr = document.getElementById('loginError');
-                const verErr = document.getElementById('verifyError');
-                if (nickErr) nickErr.style.display = 'none';
-                if (logErr) logErr.style.display = 'none';
-                if (verErr) verErr.style.display = 'none';
-            }
-        }
-        
-        function switchModal(closeId, openId) { 
-            closeModal(closeId); 
-            setTimeout(() => openModal(openId), 200); 
-        }
-
-        function toggleContactInput() {
-            const type = document.getElementById('contactType').value;
-            const label = document.getElementById('contactLabel');
-            const input = document.getElementById('regContact');
-            if (type === 'email') {
-                label.innerText = 'Электронная почта';
-                input.placeholder = 'example@mail.ru';
+        const label = document.getElementById('srv-status');
+        if (label) {
+            label.innerText = status;
+            if (status === 'Выключен') {
+                label.classList.add('offline');
             } else {
-                label.innerText = 'Мобильный телефон';
-                input.placeholder = '+7 (999) 999-99-99';
+                label.classList.remove('offline');
             }
         }
         
-        // ==========================================
-        // В. СИСТЕМА АВТОРИЗАЦИИ (LOCALSTORAGE)
-        // ==========================================
-        window.generatedCode = null;
+        const progress = document.getElementById('srv-progress');
+        if (progress) progress.style.width = `${percent}%`;
+        
+        const text = document.getElementById('srv-text');
+        if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+    }
+    
+    // Запуск обновлений
+    fetchServerOnline();
+    setInterval(fetchServerOnline, 15000);
+
+    // ==========================================
+    // 2. ИСПРАВЛЕННАЯ ЛОГИКА МОДАЛОК И КАБИНЕТА
+    // ==========================================
+    function openModal(id) { 
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add('active'); 
+    }
+    
+    function closeModal(id) { 
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active'); 
+            const nickErr = document.getElementById('regNickError');
+            const logErr = document.getElementById('loginError');
+            const verErr = document.getElementById('verifyError');
+            if (nickErr) nickErr.style.display = 'none';
+            if (logErr) logErr.style.display = 'none';
+            if (verErr) verErr.style.display = 'none';
+        }
+    }
+    
+    function switchModal(closeId, openId) { 
+        closeModal(closeId); 
+        setTimeout(() => openModal(openId), 200); 
+    }
+
+    function toggleContactInput() {
+        const type = document.getElementById('contactType').value;
+        const label = document.getElementById('contactLabel');
+        const input = document.getElementById('regContact');
+        if (type === 'email') {
+            label.innerText = 'Электронная почта';
+            input.placeholder = 'example@mail.ru';
+        } else {
+            label.innerText = 'Мобильный телефон';
+            input.placeholder = '+7 (999) 999-99-99';
+        }
+    }
+    
+    // Переменные авторизации
+    window.generatedCode = null;
+    window.tempUserData = null;
+
+    function startVerification(e) {
+        e.preventDefault();
+        const nickname = document.getElementById('regNickname').value.trim();
+        const contactType = document.getElementById('contactType').value;
+        const contact = document.getElementById('regContact').value.trim();
+        const password = document.getElementById('regPassword').value;
+        if (nickname.length < 3 || nickname.length > 20) {
+            document.getElementById('regNickError').style.display = 'block';
+            return;
+        }
+        
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        if (database[nickname.toLowerCase()]) {
+            alert('Этот никнейм уже зарегистрирован!');
+            return;
+        }
+        
+        window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+        window.tempUserData = { name: nickname, contact: contact, pass: password };
+        
+        alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
+        document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
+        switchModal('regModal', 'verifyModal');
+    }
+    
+    function completeRegister(e) {
+        e.preventDefault();
+        const userCode = document.getElementById('verifyCodeInput').value.trim();
+        const verifyError = document.getElementById('verifyError');
+        
+        if (userCode !== window.generatedCode) {
+            if (verifyError) verifyError.style.display = 'block';
+            return;
+        }
+        
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
+        localStorage.setItem('elite_players', JSON.stringify(database));
+        
+        alert('Аккаунт успешно создан и подтвержден!');
+        document.getElementById('regForm').reset();
+        document.getElementById('verifyForm').reset();
+        
         window.tempUserData = null;
-
-        function startVerification(e) {
-            e.preventDefault();
-            const nickname = document.getElementById('regNickname').value.trim();
-            const contactType = document.getElementById('contactType').value;
-            const contact = document.getElementById('regContact').value.trim();
-            const password = document.getElementById('regPassword').value;
-            
-            if (nickname.length < 3 || nickname.length > 20) {
-                document.getElementById('regNickError').style.style.display = 'block';
-                return;
-            }
-            document.getElementById('regNickError').style.display = 'none';
-            
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            if (database[nickname.toLowerCase()]) {
-                alert('Этот никнейм уже зарегистрирован!');
-                return;
-            }
-            
-            window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-            window.tempUserData = { name: nickname, contact: contact, pass: password };
-            
-            alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
-            document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
-            switchModal('regModal', 'verifyModal');
-        }
+        window.generatedCode = null;
+        switchModal('verifyModal', 'loginModal');
+    }
+    
+    function handleLogin(e) {
+        e.preventDefault();
+        const nickname = document.getElementById('loginNickname').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        const account = database[nickname.toLowerCase()];
         
-        function completeRegister(e) {
-            e.preventDefault();
-            const userCode = document.getElementById('verifyCodeInput').value.trim();
-            const verifyError = document.getElementById('verifyError');
-            
-            if (userCode !== window.generatedCode) {
-                if (verifyError) verifyError.style.display = 'block';
-                return;
-            }
-            if (verifyError) verifyError.style.display = 'none';
-            
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
-            localStorage.setItem('elite_players', JSON.stringify(database));
-            
-            alert('Аккаунт успешно создан и подтвержден!');
-            document.getElementById('regForm').reset();
-            document.getElementById('verifyForm').reset();
-            
-            window.tempUserData = null;
-            window.generatedCode = null;
-            switchModal('verifyModal', 'loginModal');
-        }
-        
-        function handleLogin(e) {
-            e.preventDefault();
-            const nickname = document.getElementById('loginNickname').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            const account = database[nickname.toLowerCase()];
-            
-            if (account && account.pass === password) {
-                localStorage.setItem('elite_logged_in', account.name);
-                updateUI();
-                closeModal('loginModal');
-                document.getElementById('loginForm').reset();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        }
-        
-        function updateUI() {
-            const loggedInUser = localStorage.getItem('elite_logged_in');
-            const authButtons = document.getElementById('authButtons');
-            const userPanel = document.getElementById('userPanel');
-            const usernameDisplay = document.getElementById('usernameDisplay');
-            
-            if (loggedInUser) {
-                if (authButtons) authButtons.style.display = 'none';
-                if (userPanel) userPanel.style.display = 'block';
-                if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
-            } else {
-                if (authButtons) authButtons.style.display = 'flex';
-                if (userPanel) userPanel.style.display = 'none';
-            }
-        }
-        
-        function logout() {
-            localStorage.removeItem('elite_logged_in');
+        if (account && account.pass === password) {
+            localStorage.setItem('elite_logged_in', account.name);
             updateUI();
+            closeModal('loginModal');
+            document.getElementById('loginForm').reset();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
         }
+    }
+    
+    function updateUI() {
+        const loggedInUser = localStorage.getItem('elite_logged_in');
+        const authButtons = document.getElementById('authButtons');
+        const userPanel = document.getElementById('userPanel');
+        const usernameDisplay = document.getElementById('usernameDisplay');
         
-        // Инициализация при первой загрузке
-        window.onload = updateUI;
-    </script>
-</body>
-</html>
+        if (loggedInUser) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userPanel) userPanel.style.display = 'block';
+            if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
+        } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userPanel) userPanel.style.display = 'none';
+        }
+    }
+    
+    function logout() {
+        localStorage.removeItem('elite_logged_in');
+        updateUI();
+    }
+    
+    window.onload = updateUI;
+</script>
