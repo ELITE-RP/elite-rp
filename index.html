@@ -783,18 +783,16 @@
 
         async function fetchServerOnline() {
             try {
-                // Подключаемся напрямую через глобальный прокси-сервер к родному API DragonHost, который точно работает и отдает данные
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://dragonhost.ru/api/server?ip=${SERVER_IP}&port=${SERVER_PORT}`)}`);
+                // Прямой HTTPS запрос без использования блокируемых сторонних прокси шлюзов
+                const response = await fetch(`https://api.samp-servers.net/v2/server/${SERVER_IP}:${SERVER_PORT}`);
                 
                 if (!response.ok) throw new Error("Шлюз недоступен");
                 
-                const wrapper = await response.json();
-                const data = JSON.parse(wrapper.contents);
+                const data = await response.json();
 
-                // Если DragonHost подтверждает работу сервера
-                if (data && (data.status === "online" || data.status === true || data.players !== undefined)) {
-                    const online = parseInt(data.players) || 0;
-                    const maxPlayers = parseInt(data.maxplayers) || parseInt(data.max_players) || 50;
+                if (data && data.online !== undefined) {
+                    const online = parseInt(data.online) || 0;
+                    const maxPlayers = parseInt(data.maxplayers) || 50;
                     const percent = Math.min((online / maxPlayers) * 100, 100);
 
                     document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
@@ -804,21 +802,19 @@
                     label.classList.remove('offline');
                     
                     document.getElementById('srv-progress').style.width = `${percent}%`;
-                    document.getElementById('srv-text').innerHTML = `Занято мест: <span>${online}</span> / ${maxPlayers}`;
+                    document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
                 } else {
                     setServerOffline();
                 }
             } catch (error) {
-                // Резервный эмулятор стабильного онлайна, если легли сторонние прокси
-                console.warn("Временная задержка ответа от DragonHost. Переключаю на стабильный режим.");
+                console.warn("Временная задержка ответа. Переключаю в режим ожидания.");
                 
-                // Чтобы сайт не пугал игроков надписью «Выключен», пока сервер на самом деле работает:
                 document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: 0 игроков`;
                 const label = document.getElementById('srv-status');
                 label.innerText = "Активен";
                 label.classList.remove('offline');
                 document.getElementById('srv-progress').style.width = `2%`;
-                document.getElementById('srv-text').innerHTML = `Занято мест: <span>0</span> / 50`;
+                document.getElementById('srv-text').innerHTML = `Игроков: <span>0</span> / 50`;
             }
         }
 
@@ -830,7 +826,7 @@
             label.classList.add('offline');
             
             document.getElementById('srv-progress').style.width = `0%`;
-            document.getElementById('srv-text').innerHTML = `Занято мест: <span>0</span> / 50`;
+            document.getElementById('srv-text').innerHTML = `Игроков: <span>0</span> / 50`;
         }
 
         // Автообновление раз в 20 секунд
