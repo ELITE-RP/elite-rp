@@ -777,109 +777,23 @@
         let tempUserData = null;
         let generatedCode = null;
 
-        // Данные твоего сервера
-        const SERVER_IP = "94.23.168.153";
-        const SERVER_PORT = "2325";
-
-        async function fetchServerOnline() {
-            try {
-                // Прямой HTTPS запрос без использования блокируемых сторонних прокси шлюзов
-                const response = await fetch(`https://api.samp-servers.net/v2/server/${SERVER_IP}:${SERVER_PORT}`);
-                
-                if (!response.ok) throw new Error("Шлюз недоступен");
-                
-                const data = await response.json();
-
-                if (data && data.online !== undefined) {
-                    const online = parseInt(data.online) || 0;
-                    const maxPlayers = parseInt(data.maxplayers) || 50;
-                    const percent = Math.min((online / maxPlayers) * 100, 100);
-
-                    document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
-                    
-                    const label = document.getElementById('srv-status');
-                    label.innerText = "Активен";
-                    label.classList.remove('offline');
-                    
-                    document.getElementById('srv-progress').style.width = `${percent}%`;
-                    document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
-                } else {
-                    setServerOffline();
-                }
-            } catch (error) {
-                console.warn("Временная задержка ответа. Переключаю в режим ожидания.");
-                
-                document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: 0 игроков`;
-                const label = document.getElementById('srv-status');
-                label.innerText = "Активен";
-                label.classList.remove('offline');
-                document.getElementById('srv-progress').style.width = `2%`;
-                document.getElementById('srv-text').innerHTML = `Игроков: <span>0</span> / 50`;
-            }
-        }
-
-        function setServerOffline() {
-            document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle offline"></i> Проект временно недоступен`;
-            
-            const label = document.getElementById('srv-status');
-            label.innerText = "Выключен";
-            label.classList.add('offline');
-            
-            document.getElementById('srv-progress').style.width = `0%`;
-            document.getElementById('srv-text').innerHTML = `Игроков: <span>0</span> / 50`;
-        }
-
-        // Автообновление раз в 20 секунд
-        fetchServerOnline();
-        setInterval(fetchServerOnline, 20000);
-
-        // Вспомогательные функции интерфейса
-        function toggleContactInput() {
-            const type = document.getElementById('contactType').value;
-            const label = document.getElementById('contactLabel');
-            const input = document.getElementById('regContact');
-            if (type === 'email') {
-                label.innerText = 'Электронная почта';
-                input.placeholder = 'example@mail.ru';
-            } else {
-                label.innerText = 'Мобильный телефон';
-                input.placeholder = '+7 (999) 999-99-99';
-            }
-        }
-
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { 
-            document.getElementById(id).classList.remove('active'); 
-            document.getElementById('regNickError').style.display = 'none';
-            document.getElementById('loginError').style.display = 'none';
-            if(document.getElementById('verifyError')) document.getElementById('verifyError').style.display = 'none';
-        }
-        function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => openModal(openId), 200); }
-
-        function startVerification(e) {
-            e.preventDefault();
-            const nickname = document.getElementById('regNickname').value.trim();
+        const nickname = document.getElementById('regNickname').value.trim();
             const contactType = document.getElementById('contactType').value;
             const contact = document.getElementById('regContact').value.trim();
             const password = document.getElementById('regPassword').value;
-
             if (nickname.length < 3 || nickname.length > 20) {
                 document.getElementById('regNickError').style.display = 'block';
                 return;
             }
             document.getElementById('regNickError').style.display = 'none';
-
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
             if (database[nickname.toLowerCase()]) {
                 alert('Этот никнейм уже зарегистрирован!');
                 return;
             }
-
             generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
             tempUserData = { name: nickname, contact: contact, pass: password };
-
             alert(`Код подтверждения для ELITE RP: ${generatedCode}`);
-
             document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
             switchModal('regModal', 'verifyModal');
         }
@@ -888,24 +802,20 @@
             e.preventDefault();
             const userCode = document.getElementById('verifyCodeInput').value.trim();
             const verifyError = document.getElementById('verifyError');
-
             if (userCode !== generatedCode) {
                 verifyError.style.display = 'block';
                 return;
             }
             verifyError.style.display = 'none';
-
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
             database[tempUserData.name.toLowerCase()] = tempUserData;
             localStorage.setItem('elite_players', JSON.stringify(database));
-
             alert('Аккаунт успешно создан и подтвержден!');
             document.getElementById('regForm').reset();
             document.getElementById('verifyForm').reset();
             
             tempUserData = null;
             generatedCode = null;
-
             switchModal('verifyModal', 'loginModal');
         }
 
@@ -913,10 +823,8 @@
             e.preventDefault();
             const nickname = document.getElementById('loginNickname').value.trim();
             const password = document.getElementById('loginPassword').value;
-
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
             const account = database[nickname.toLowerCase()];
-
             if (account && account.pass === password) {
                 localStorage.setItem('elite_logged_in', account.name);
                 updateUI();
