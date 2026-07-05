@@ -782,38 +782,33 @@
         
         async function fetchServerOnline() {
             try {
-                // Стабильный прокси-сервер для обхода AntiDDOS защиты DragonHost
-                const targetUrl = `https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}`;
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
+                // Прямой вызов через самый надежный CORS-прокси corsproxy.io
+                const response = await fetch(`https://corsproxy.io/?url=https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}`);
                 
                 if (!response.ok) throw new Error("Шлюз недоступен");
                 
-                const wrapper = await response.json();
+                const data = await response.json();
                 
-                if (wrapper && wrapper.contents) {
-                    const data = JSON.parse(wrapper.contents);
+                if (data && data.players !== undefined) {
+                    const online = parseInt(data.players) || 0;
+                    const maxPlayers = parseInt(data.maxPlayers) || 50;
+                    const percent = Math.min((online / maxPlayers) * 100, 100);
                     
-                    if (data && data.players !== undefined) {
-                        const online = parseInt(data.players) || 0;
-                        const maxPlayers = parseInt(data.maxPlayers) || 50;
-                        const percent = Math.min((online / maxPlayers) * 100, 100);
-                        
-                        document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
-                        
-                        const label = document.getElementById('srv-status');
-                        label.innerText = "Активен";
-                        label.classList.remove('offline');
-                        
-                        document.getElementById('srv-progress').style.width = `${percent}%`;
-                        document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
-                        return;
-                    }
+                    document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
+                    
+                    const label = document.getElementById('srv-status');
+                    label.innerText = "Активен";
+                    label.classList.remove('offline');
+                    
+                    document.getElementById('srv-progress').style.width = `${percent}%`;
+                    document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+                    return;
                 }
                 setServerOffline();
             } catch (error) {
                 console.warn("Ожидание ответа сети...", error);
                 
-                // Мягкий режим: не пишем "Выключен", интерфейс остается активным
+                // Мягкий режим ожидания (если прокси долго отвечает, не пишем что сервер выключен)
                 const label = document.getElementById('srv-status');
                 if (label) {
                     label.innerText = "Активен";
@@ -862,7 +857,7 @@
         
         function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => openModal(openId), 200); }
         
-        // Переменные авторизации (убран повторный let ниже по коду, чтобы не ломать ЛК)
+        // Глобальные переменные авторизации
         if (typeof generatedCode === 'undefined') { window.generatedCode = null; }
         if (typeof tempUserData === 'undefined') { window.tempUserData = null; }
 
