@@ -781,43 +781,58 @@
         const SERVER_PORT = "2325";
         
         async function fetchServerOnline() {
-            try {
-                // Добавляем случайный параметр ?t=..., чтобы прокси не выдавал старый закэшированный ноль
-                const cacheBuster = Date.now();
-                const targetUrl = `https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}?t=${cacheBuster}`;
-                
-                // Пробуем сначала через всемирный динамический CORS-прокси
-                const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`)
-                    .catch(() => null);
-                
-                if (response && response.ok) {
+            const cacheBuster = Date.now();
+            const targetUrl = `https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}?nocache=${cacheBuster}`;
+            
+            // Список прокси-серверов для обхода CORS-блокировок (если первый упадет, сработает второй)
+            const proxyURLs = [
+                `https://api.codetabs.com/v1/proxy?url=${encodeURIComponent(targetUrl)}`,
+                `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`
+            ];
+
+            for (let url of proxyURLs) {
+                try {
+                    const response = await fetch(url).catch(() => null);
+                    if (!response || !response.ok) continue; // Если этот прокси выдал 502/520, идем к следующему
+
                     const resData = await response.json();
+                    let data = null;
+
+                    // Разные прокси возвращают данные в разной структуре
                     if (resData && resData.contents) {
-                        const data = JSON.parse(resData.contents); 
+                        data = JSON.parse(resData.contents); // Формат allorigins
+                    } else {
+                        data = resData; // Формат codetabs
+                    }
+
+                    if (data && data.players !== undefined) {
+                        const online = parseInt(data.players) || 0;
+                        const maxPlayers = parseInt(data.maxPlayers) || 50;
+                        const percent = Math.min((online / maxPlayers) * 100, 100);
                         
-                        if (data && data.players !== undefined) {
-                            const online = parseInt(data.players) || 0;
-                            const maxPlayers = parseInt(data.maxPlayers) || 50;
-                            const percent = Math.min((online / maxPlayers) * 100, 100);
-                            
-                            document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
-                            
-                            const label = document.getElementById('srv-status');
+                        document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
+                        
+                        const label = document.getElementById('srv-status');
+                        if (label) {
                             label.innerText = "Активен";
                             label.classList.remove('offline');
-                            
-                            document.getElementById('srv-progress').style.width = `${percent}%`;
-                            document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
-                            return;
                         }
+                        
+                        const progress = document.getElementById('srv-progress');
+                        if (progress) progress.style.width = `${percent}%`;
+                        
+                        const text = document.getElementById('srv-text');
+                        if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+                        return; // Данные успешно получены, выходим из функции
                     }
+                } catch (e) {
+                    // Ошибка разбора конкретного прокси, пробуем следующий в цикле
+                    continue;
                 }
-                
-                // Если прокси упал, но ты сам в игре, ставим мягкую заглушку, чтобы сервер не казался мертвым
-                setServerOffline();
-            } catch (error) {
-                setServerOffline();
             }
+
+            // Если абсолютно все сетевые шлюзы выдали ошибку, ставим мягкий оффлайн
+            setServerOffline();
         }
         
         function setServerOffline() {
@@ -837,9 +852,9 @@
             if (text) text.innerHTML = `Игроков: <span>0</span> / 50`;
         }
         
-        // Автообновление раз в 20 секунд
+        // Автообновление раз в 25 секунд
         fetchServerOnline();
-        setInterval(fetchServerOnline, 20000);
+        setInterval(fetchServerOnline, 25000);
         
         // Вспомогательные функции интерфейса
         function toggleContactInput() {
@@ -860,7 +875,8 @@
             if (modal) modal.classList.add('active'); 
         }
         
-        function closeModal(id) {const modal = document.getElementById(id);
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
             if (modal) {
                 modal.classList.remove('active'); 
                 const nickErr = document.getElementById('regNickError');
@@ -928,7 +944,6 @@
             window.generatedCode = null;
             switchModal('verifyModal', 'loginModal');
         }
-        
         function handleLogin(e) {
             e.preventDefault();
             const nickname = document.getElementById('loginNickname').value.trim();
