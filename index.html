@@ -776,189 +776,187 @@
     <script>
         let tempUserData = null;
         let generatedCode = null;
-// Переменные для чтения локального конфига онлайна
-        async function fetchServerOnline() {
-            try {
-                // Добавляем ?t=..., чтобы браузер не кэшировал файл и сразу видел изменения от бота
-                const response = await fetch(`./online.json?t=${Date.now()}`).catch(() => null);
-                
-                if (response && response.ok) {
-                    const data = await response.json();
+<script>
+    // ==========================================
+    // 1. МОНИТОРИНГ ОНЛАЙНА ИЗ JSON
+    // ==========================================
+    async function fetchServerOnline() {
+        try {
+            const response = await fetch(`./online.json?t=${Date.now()}`).catch(() => null);
+            if (response && response.ok) {
+                const data = await response.json();
+                if (data && data.players !== undefined) {
+                    const online = parseInt(data.players) || 0;
+                    const maxPlayers = parseInt(data.maxPlayers) || 50;
+                    const status = data.status || "Активен";
                     
-                    if (data && data.players !== undefined) {
-                        const online = parseInt(data.players) || 0;
-                        const maxPlayers = parseInt(data.maxPlayers) || 50;
-                        const status = data.status || "Активен";
-                        
-                        updateOnlineUI(online, maxPlayers, status);
-                        return;
-                    }
-                }
-                // Если файла нет или он пустой — мягкая подстраховка, сервер онлайн, игроков 0
-                updateOnlineUI(0, 50, "Активен");
-            } catch (error) {
-                updateOnlineUI(0, 50, "Активен");
-            }
-        }
-
-        function updateOnlineUI(online, maxPlayers, status) {
-            const percent = Math.min((online / maxPlayers) * 100, 100);
-            
-            const badge = document.getElementById('total-online-badge');
-            if (badge) {
-                badge.innerHTML = `<i class="fa-solid fa-circle ${status === 'Выключен' ? 'offline' : ''}"></i> Общий онлайн проекта: ${online} игроков`;
-            }
-            
-            const label = document.getElementById('srv-status');
-            if (label) {
-                label.innerText = status;
-                if (status === 'Выключен') {
-                    label.classList.add('offline');
-                } else {
-                    label.classList.remove('offline');
+                    updateOnlineUI(online, maxPlayers, status);
+                    return;
                 }
             }
-            
-            const progress = document.getElementById('srv-progress');
-            if (progress) progress.style.width = `${percent}%`;
-            
-            const text = document.getElementById('srv-text');
-            if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+            updateOnlineUI(0, 50, "Активен");
+        } catch (error) {
+            updateOnlineUI(0, 50, "Активен");
         }
-        
-        // Автообновление раз в 15 секунд
-        fetchServerOnline();
-        setInterval(fetchServerOnline, 15000);
-        
-        // ==========================================
-        // ЛОГИКА КАБИНЕТА И АВТОРИЗАЦИИ (БЕЗ ИЗМЕНЕНИЙ)
-        // ==========================================
-        function toggleContactInput() {
-            const type = document.getElementById('contactType').value;
-            const label = document.getElementById('contactLabel');
-            const input = document.getElementById('regContact');
-            if (type === 'email') {
-                label.innerText = 'Электронная почта';
-                input.placeholder = 'example@mail.ru';
-            } else {
-                label.innerText = 'Мобильный телефон';
-                input.placeholder = '+7 (999) 999-99-99';
-            }
-        }
-        
-        function openModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) modal.classList.add('active'); 
-        }
-        
-        function closeModal(id) { 
-            const modal = document.getElementById(id);
-            if (modal) {
-                modal.classList.remove('active'); 
-                const nickErr = document.getElementById('regNickError');
-                const logErr = document.getElementById('loginError');
-                const verErr = document.getElementById('verifyError');
-                if (nickErr) nickErr.style.display = 'none';
-                if (logErr) logErr.style.display = 'none';
-                if (verErr) verErr.style.display = 'none';
-            }
-        }
-        
-        function switchModal(closeId, openId) { 
-            closeModal(closeId); 
-            setTimeout(() => openModal(openId), 200); 
-        }
-        // Переменные авторизации (изолированы, чтобы не вызывать конфликтов)
-        if (typeof window.generatedCode === 'undefined') { window.generatedCode = null; }
-        if (typeof window.tempUserData === 'undefined') { window.tempUserData = null; }
+    }
 
-        function startVerification(e) {
-            e.preventDefault();
-            const nickname = document.getElementById('regNickname').value.trim();
-            const contactType = document.getElementById('contactType').value;
-            const contact = document.getElementById('regContact').value.trim();
-            const password = document.getElementById('regPassword').value;
-            
-            if (nickname.length < 3 || nickname.length > 20) {
-                document.getElementById('regNickError').style.display = 'block';
-                return;
-            }
-            document.getElementById('regNickError').style.display = 'none';
-            
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            if (database[nickname.toLowerCase()]) {
-                alert('Этот никнейм уже зарегистрирован!');
-                return;
-            }
-            
-            window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-            window.tempUserData = { name: nickname, contact: contact, pass: password };
-            
-            alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
-            document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
-            switchModal('regModal', 'verifyModal');
+    function updateOnlineUI(online, maxPlayers, status) {
+        const percent = Math.min((online / maxPlayers) * 100, 100);
+        
+        const badge = document.getElementById('total-online-badge');
+        if (badge) {
+            badge.innerHTML = `<i class="fa-solid fa-circle ${status === 'Выключен' ? 'offline' : ''}"></i> Общий онлайн проекта: ${online} игроков`;
         }
         
-        function completeRegister(e) {
-            e.preventDefault();
-            const userCode = document.getElementById('verifyCodeInput').value.trim();
-            const verifyError = document.getElementById('verifyError');
-            
-            if (userCode !== window.generatedCode) {
-                if (verifyError) verifyError.style.display = 'block';
-                return;
-            }
-            if (verifyError) verifyError.style.display = 'none';
-            
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
-            localStorage.setItem('elite_players', JSON.stringify(database));
-            
-            alert('Аккаунт успешно создан и подтвержден!');
-            document.getElementById('regForm').reset();
-            document.getElementById('verifyForm').reset();
-            
-            window.tempUserData = null;
-            window.generatedCode = null;
-            switchModal('verifyModal', 'loginModal');
-        }
-        
-        function handleLogin(e) {
-            e.preventDefault();
-            const nickname = document.getElementById('loginNickname').value.trim();
-            const password = document.getElementById('loginPassword').value;
-            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-            const account = database[nickname.toLowerCase()];
-            
-            if (account && account.pass === password) {
-                localStorage.setItem('elite_logged_in', account.name);
-                updateUI();
-                closeModal('loginModal');
-                document.getElementById('loginForm').reset();
+        const label = document.getElementById('srv-status');
+        if (label) {
+            label.innerText = status;
+            if (status === 'Выключен') {
+                label.classList.add('offline');
             } else {
-                document.getElementById('loginError').style.display = 'block';
+                label.classList.remove('offline');
             }
         }
         
-        function updateUI() {
-            const loggedInUser = localStorage.getItem('elite_logged_in');
-            const authButtons = document.getElementById('authButtons');
-            const userPanel = document.getElementById('userPanel');
-            const usernameDisplay = document.getElementById('usernameDisplay');
-            
-            if (loggedInUser) {
-                if (authButtons) authButtons.style.display = 'none';
-                if (userPanel) userPanel.style.display = 'block';
-                if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
-            } else {
-                if (authButtons) authButtons.style.display = 'flex';
-                if (userPanel) userPanel.style.display = 'none';
-            }
+        const progress = document.getElementById('srv-progress');
+        if (progress) progress.style.width = `${percent}%`;
+        
+        const text = document.getElementById('srv-text');
+        if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+    }
+    
+    // Запуск обновлений
+    fetchServerOnline();
+    setInterval(fetchServerOnline, 15000);
+
+    // ==========================================
+    // 2. ИСПРАВЛЕННАЯ ЛОГИКА МОДАЛОК И КАБИНЕТА
+    // ==========================================
+    function openModal(id) { 
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add('active'); 
+    }
+    
+    function closeModal(id) { 
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active'); 
+            const nickErr = document.getElementById('regNickError');
+            const logErr = document.getElementById('loginError');
+            const verErr = document.getElementById('verifyError');
+            if (nickErr) nickErr.style.display = 'none';
+            if (logErr) logErr.style.display = 'none';
+            if (verErr) verErr.style.display = 'none';
+        }
+    }
+    
+    function switchModal(closeId, openId) { 
+        closeModal(closeId); 
+        setTimeout(() => openModal(openId), 200); 
+    }
+
+    function toggleContactInput() {
+        const type = document.getElementById('contactType').value;
+        const label = document.getElementById('contactLabel');
+        const input = document.getElementById('regContact');
+        if (type === 'email') {
+            label.innerText = 'Электронная почта';
+            input.placeholder = 'example@mail.ru';
+        } else {
+            label.innerText = 'Мобильный телефон';
+            input.placeholder = '+7 (999) 999-99-99';
+        }
+    }
+    
+    // Переменные авторизации
+    window.generatedCode = null;
+    window.tempUserData = null;
+
+    function startVerification(e) {
+        e.preventDefault();
+        const nickname = document.getElementById('regNickname').value.trim();
+        const contactType = document.getElementById('contactType').value;
+        const contact = document.getElementById('regContact').value.trim();
+        const password = document.getElementById('regPassword').value;
+        if (nickname.length < 3 || nickname.length > 20) {
+            document.getElementById('regNickError').style.display = 'block';
+            return;
         }
         
-        function logout() {
-            localStorage.removeItem('elite_logged_in');
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        if (database[nickname.toLowerCase()]) {
+            alert('Этот никнейм уже зарегистрирован!');
+            return;
+        }
+        
+        window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+        window.tempUserData = { name: nickname, contact: contact, pass: password };
+        
+        alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
+        document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
+        switchModal('regModal', 'verifyModal');
+    }
+    
+    function completeRegister(e) {
+        e.preventDefault();
+        const userCode = document.getElementById('verifyCodeInput').value.trim();
+        const verifyError = document.getElementById('verifyError');
+        
+        if (userCode !== window.generatedCode) {
+            if (verifyError) verifyError.style.display = 'block';
+            return;
+        }
+        
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
+        localStorage.setItem('elite_players', JSON.stringify(database));
+        
+        alert('Аккаунт успешно создан и подтвержден!');
+        document.getElementById('regForm').reset();
+        document.getElementById('verifyForm').reset();
+        
+        window.tempUserData = null;
+        window.generatedCode = null;
+        switchModal('verifyModal', 'loginModal');
+    }
+    
+    function handleLogin(e) {
+        e.preventDefault();
+        const nickname = document.getElementById('loginNickname').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+        const account = database[nickname.toLowerCase()];
+        
+        if (account && account.pass === password) {
+            localStorage.setItem('elite_logged_in', account.name);
             updateUI();
+            closeModal('loginModal');
+            document.getElementById('loginForm').reset();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
         }
+    }
+    
+    function updateUI() {
+        const loggedInUser = localStorage.getItem('elite_logged_in');
+        const authButtons = document.getElementById('authButtons');
+        const userPanel = document.getElementById('userPanel');
+        const usernameDisplay = document.getElementById('usernameDisplay');
         
-        window.onload = updateUI;
+        if (loggedInUser) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userPanel) userPanel.style.display = 'block';
+            if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
+        } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userPanel) userPanel.style.display = 'none';
+        }
+    }
+    
+    function logout() {
+        localStorage.removeItem('elite_logged_in');
+        updateUI();
+    }
+    
+    window.onload = updateUI;
+</script>
