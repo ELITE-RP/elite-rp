@@ -776,55 +776,47 @@
     <script>
         let tempUserData = null;
         let generatedCode = null;
-// Данные твоего сервера ELITE RP
-        const SERVER_IP = "94.23.168.153";
-        const SERVER_PORT = "2325";
-        
+// Переменные для чтения локального конфига онлайна
         async function fetchServerOnline() {
-            const cacheBuster = Date.now();
-            const targetUrl = `https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}?nocache=${cacheBuster}`;
-            
-            // Пробуем только один самый легкий CORS-путь без лишней каши в URL
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`;
-
             try {
-                const response = await fetch(proxyUrl).catch(() => null);
+                // Добавляем ?t=..., чтобы браузер не кэшировал файл и сразу видел изменения от бота
+                const response = await fetch(`./online.json?t=${Date.now()}`).catch(() => null);
                 
                 if (response && response.ok) {
-                    const resData = await response.json();
-                    if (resData && resData.contents) {
-                        const data = JSON.parse(resData.contents); 
+                    const data = await response.json();
+                    
+                    if (data && data.players !== undefined) {
+                        const online = parseInt(data.players) || 0;
+                        const maxPlayers = parseInt(data.maxPlayers) || 50;
+                        const status = data.status || "Активен";
                         
-                        if (data && data.players !== undefined) {
-                            const online = parseInt(data.players) || 0;
-                            const maxPlayers = parseInt(data.maxPlayers) || 50;
-                            updateOnlineUI(online, maxPlayers);
-                            return; 
-                        }
+                        updateOnlineUI(online, maxPlayers, status);
+                        return;
                     }
                 }
-                
-                // ПОДСТРАХОВКА: Если прокси выдал 400, 520 или лег, сайт не зависнет на "Загрузке".
-                // Он покажет честный 0 (или 1, если ты тестируешь в игре), но статус останется "Активен"
-                updateOnlineUI(0, 50);
+                // Если файла нет или он пустой — мягкая подстраховка, сервер онлайн, игроков 0
+                updateOnlineUI(0, 50, "Активен");
             } catch (error) {
-                // В случае любого сетевого сбоя плавно выводим дефолтные значения
-                updateOnlineUI(0, 50);
+                updateOnlineUI(0, 50, "Активен");
             }
         }
 
-        function updateOnlineUI(online, maxPlayers) {
+        function updateOnlineUI(online, maxPlayers, status) {
             const percent = Math.min((online / maxPlayers) * 100, 100);
             
             const badge = document.getElementById('total-online-badge');
             if (badge) {
-                badge.innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
+                badge.innerHTML = `<i class="fa-solid fa-circle ${status === 'Выключен' ? 'offline' : ''}"></i> Общий онлайн проекта: ${online} игроков`;
             }
             
             const label = document.getElementById('srv-status');
             if (label) {
-                label.innerText = "Активен";
-                label.classList.remove('offline');
+                label.innerText = status;
+                if (status === 'Выключен') {
+                    label.classList.add('offline');
+                } else {
+                    label.classList.remove('offline');
+                }
             }
             
             const progress = document.getElementById('srv-progress');
@@ -834,11 +826,13 @@
             if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
         }
         
-        // Автообновление раз в 30 секунд (чтобы прокси не блокировали за спам запросами)
+        // Автообновление раз в 15 секунд
         fetchServerOnline();
-        setInterval(fetchServerOnline, 30000);
+        setInterval(fetchServerOnline, 15000);
         
-        // Вспомогательные функции интерфейса (Личный кабинет Shadow)
+        // ==========================================
+        // ЛОГИКА КАБИНЕТА И АВТОРИЗАЦИИ (БЕЗ ИЗМЕНЕНИЙ)
+        // ==========================================
         function toggleContactInput() {
             const type = document.getElementById('contactType').value;
             const label = document.getElementById('contactLabel');
@@ -874,8 +868,7 @@
             closeModal(closeId); 
             setTimeout(() => openModal(openId), 200); 
         }
-        
-        // Переменные авторизации (изолированы в window)
+        // Переменные авторизации (изолированы, чтобы не вызывать конфликтов)
         if (typeof window.generatedCode === 'undefined') { window.generatedCode = null; }
         if (typeof window.tempUserData === 'undefined') { window.tempUserData = null; }
 
@@ -890,8 +883,7 @@
                 document.getElementById('regNickError').style.display = 'block';
                 return;
             }
-            const nickErr = document.getElementById('regNickError');
-            if (nickErr) nickErr.style.display = 'none';
+            document.getElementById('regNickError').style.display = 'none';
             
             let database = JSON.parse(localStorage.getItem('elite_players')) || {};
             if (database[nickname.toLowerCase()]) {
@@ -903,10 +895,7 @@
             window.tempUserData = { name: nickname, contact: contact, pass: password };
             
             alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
-            const verifyText = document.getElementById('verifyText');
-            if (verifyText) {
-                verifyText.innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
-            }
+            document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
             switchModal('regModal', 'verifyModal');
         }
         
@@ -947,8 +936,7 @@
                 closeModal('loginModal');
                 document.getElementById('loginForm').reset();
             } else {
-                const loginError = document.getElementById('loginError');
-                if (loginError) loginError.style.display = 'block';
+                document.getElementById('loginError').style.display = 'block';
             }
         }
         
