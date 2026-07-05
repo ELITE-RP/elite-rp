@@ -582,17 +582,6 @@
         .btn-social-footer.dc { background: rgba(88, 101, 242, 0.08); color: #5865f2; }
         .btn-social-footer.dc:hover { background: #5865f2; color: #ffffff; }
 
-        @keyframes pulse {
-            0% { opacity: 0.4; }
-            50% { opacity: 1; }
-            100% { opacity: 0.4; }
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-12px); }
-            100% { transform: translateY(0px); }
-        }
-
         @media (max-width: 992px) {
             header { padding: 15px 4%; }
             nav { display: none; }
@@ -695,7 +684,7 @@
         <div class="modal-window">
             <span class="close-modal" onclick="closeModal('regModal')">&times;</span>
             <h2>Регистрация</h2>
-            <form id="regForm" onsubmit="startVerification(event)">
+            <form id="regForm">
                 <div class="input-group">
                     <label>Игровой Никнейм</label>
                     <input type="text" id="regNickname" placeholder="Например: Nick_Name" required>
@@ -729,7 +718,7 @@
             <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 20px; text-align: center; font-weight: 500;" id="verifyText">
                 Код авторизации выслан на указанные реквизиты.
             </p>
-            <form id="verifyForm" onsubmit="completeRegister(event)">
+            <form id="verifyForm">
                 <div class="input-group">
                     <label>6-значный код подтверждения</label>
                     <input type="text" id="verifyCodeInput" placeholder="000000" maxlength="6" required style="text-align: center; letter-spacing: 6px; font-size: 1.4rem; background: #ffffff; border: 2px solid var(--primary);">
@@ -744,7 +733,7 @@
         <div class="modal-window">
             <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
             <h2>Авторизация</h2>
-            <form id="loginForm" onsubmit="handleLogin(event)">
+            <form id="loginForm">
                 <div class="input-group">
                     <label>Ваш Никнейм</label>
                     <input type="text" id="loginNickname" placeholder="Введи ник" required>
@@ -774,189 +763,197 @@
     </footer>
 
     <script>
-        let tempUserData = null;
-        let generatedCode = null;
-<script>
-    // ==========================================
-    // 1. МОНИТОРИНГ ОНЛАЙНА ИЗ JSON
-    // ==========================================
-    async function fetchServerOnline() {
-        try {
-            const response = await fetch(`./online.json?t=${Date.now()}`).catch(() => null);
-            if (response && response.ok) {
-                const data = await response.json();
-                if (data && data.players !== undefined) {
-                    const online = parseInt(data.players) || 0;
-                    const maxPlayers = parseInt(data.maxPlayers) || 50;
-                    const status = data.status || "Активен";
-                    
-                    updateOnlineUI(online, maxPlayers, status);
-                    return;
+        // Привязываем обработчики событий отправки форм через JavaScript, чтобы не ломать HTML
+        document.getElementById('loginForm').addEventListener('submit', function(e) { handleLogin(e); });
+        document.getElementById('regForm').addEventListener('submit', function(e) { startVerification(e); });
+        document.getElementById('verifyForm').addEventListener('submit', function(e) { completeRegister(e); });
+
+        // ==========================================
+        // 1. МОНИТОРИНГ ОНЛАЙНА ИЗ JSON
+        // ==========================================
+        async function fetchServerOnline() {
+            try {
+                const response = await fetch(`./онлайн.json?t=${Date.now()}`).catch(() => null);
+                if (response && response.ok) {
+                    const data = await response.json();
+                    if (data && data.players !== undefined) {
+                        const online = parseInt(data.players) || 0;
+                        const maxPlayers = parseInt(data.maxPlayers) || 50;
+                        const status = data.status || "Активен";
+                        
+                        updateOnlineUI(online, maxPlayers, status);
+                        return;
+                    }
+                }
+                updateOnlineUI(0, 50, "Активен");
+            } catch (error) {
+                updateOnlineUI(0, 50, "Активен");
+            }
+        }
+
+        function updateOnlineUI(online, maxPlayers, status) {
+            const percent = Math.min((online / maxPlayers) * 100, 100);
+            
+            const badge = document.getElementById('total-online-badge');
+            if (badge) {
+                if (status === 'Выключен') {
+                    badge.innerHTML = `<i class="fa-solid fa-circle offline"></i> Проект выключен`;
+                } else {
+                    badge.innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
                 }
             }
-            updateOnlineUI(0, 50, "Активен");
-        } catch (error) {
-            updateOnlineUI(0, 50, "Активен");
+            
+            const label = document.getElementById('srv-status');
+            if (label) {
+                label.innerText = status;
+                if (status === 'Выключен') {
+                    label.classList.add('offline');
+                } else {
+                    label.classList.remove('offline');
+                }
+            }
+            
+            const progress = document.getElementById('srv-progress');
+            if (progress) progress.style.width = `${percent}%`;
+            
+            const text = document.getElementById('srv-text');
+            if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
         }
-    }
+        
+        // Запуск обновлений онлайна
+        fetchServerOnline();
+        setInterval(fetchServerOnline, 15000);
 
-    function updateOnlineUI(online, maxPlayers, status) {
-        const percent = Math.min((online / maxPlayers) * 100, 100);
-        
-        const badge = document.getElementById('total-online-badge');
-        if (badge) {
-            badge.innerHTML = `<i class="fa-solid fa-circle ${status === 'Выключен' ? 'offline' : ''}"></i> Общий онлайн проекта: ${online} игроков`;
+        // ==========================================
+        // 2. ИСПРАВЛЕННАЯ ЛОГИКА МОДАЛОК И КАБИНЕТА
+        // ==========================================
+        function openModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.add('active'); 
         }
         
-        const label = document.getElementById('srv-status');
-        if (label) {
-            label.innerText = status;
-            if (status === 'Выключен') {
-                label.classList.add('offline');
-            } else {
-                label.classList.remove('offline');
+        function closeModal(id) { 
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('active'); 
+                const nickErr = document.getElementById('regNickError');
+                const logErr = document.getElementById('loginError');
+                const verErr = document.getElementById('verifyError');
+                if (nickErr) nickErr.style.display = 'none';
+                if (logErr) logErr.style.display = 'none';
+                if (verErr) verErr.style.display = 'none';
             }
         }
         
-        const progress = document.getElementById('srv-progress');
-        if (progress) progress.style.width = `${percent}%`;
-        
-        const text = document.getElementById('srv-text');
-        if (text) text.innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
-    }
-    
-    // Запуск обновлений
-    fetchServerOnline();
-    setInterval(fetchServerOnline, 15000);
+        function switchModal(closeId, openId) { 
+            closeModal(closeId); 
+            setTimeout(() => openModal(openId), 200); 
+        }
 
-    // ==========================================
-    // 2. ИСПРАВЛЕННАЯ ЛОГИКА МОДАЛОК И КАБИНЕТА
-    // ==========================================
-    function openModal(id) { 
-        const modal = document.getElementById(id);
-        if (modal) modal.classList.add('active'); 
-    }
-    
-    function closeModal(id) { 
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.remove('active'); 
-            const nickErr = document.getElementById('regNickError');
-            const logErr = document.getElementById('loginError');
-            const verErr = document.getElementById('verifyError');
-            if (nickErr) nickErr.style.display = 'none';
-            if (logErr) logErr.style.display = 'none';
-            if (verErr) verErr.style.display = 'none';
-        }
-    }
-    
-    function switchModal(closeId, openId) { 
-        closeModal(closeId); 
-        setTimeout(() => openModal(openId), 200); 
-    }
-
-    function toggleContactInput() {
-        const type = document.getElementById('contactType').value;
-        const label = document.getElementById('contactLabel');
-        const input = document.getElementById('regContact');
-        if (type === 'email') {
-            label.innerText = 'Электронная почта';
-            input.placeholder = 'example@mail.ru';
-        } else {
-            label.innerText = 'Мобильный телефон';
-            input.placeholder = '+7 (999) 999-99-99';
-        }
-    }
-    
-    // Переменные авторизации
-    window.generatedCode = null;
-    window.tempUserData = null;
-
-    function startVerification(e) {
-        e.preventDefault();
-        const nickname = document.getElementById('regNickname').value.trim();
-        const contactType = document.getElementById('contactType').value;
-        const contact = document.getElementById('regContact').value.trim();
-        const password = document.getElementById('regPassword').value;
-        if (nickname.length < 3 || nickname.length > 20) {
-            document.getElementById('regNickError').style.display = 'block';
-            return;
+        function toggleContactInput() {
+            const type = document.getElementById('contactType').value;
+            const label = document.getElementById('contactLabel');
+            const input = document.getElementById('regContact');
+            if (type === 'email') {
+                label.innerText = 'Электронная почта';
+                input.placeholder = 'example@mail.ru';
+            } else {
+                label.innerText = 'Мобильный телефон';
+                input.placeholder = '+7 (999) 999-99-99';
+            }
         }
         
-        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-        if (database[nickname.toLowerCase()]) {
-            alert('Этот никнейм уже зарегистрирован!');
-            return;
-        }
-        
-        window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-        window.tempUserData = { name: nickname, contact: contact, pass: password };
-        
-        alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
-        document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
-        switchModal('regModal', 'verifyModal');
-    }
-    
-    function completeRegister(e) {
-        e.preventDefault();
-        const userCode = document.getElementById('verifyCodeInput').value.trim();
-        const verifyError = document.getElementById('verifyError');
-        
-        if (userCode !== window.generatedCode) {
-            if (verifyError) verifyError.style.display = 'block';
-            return;
-        }
-        
-        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-        database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
-        localStorage.setItem('elite_players', JSON.stringify(database));
-        
-        alert('Аккаунт успешно создан и подтвержден!');
-        document.getElementById('regForm').reset();
-        document.getElementById('verifyForm').reset();
-        
-        window.tempUserData = null;
+        // Переменные авторизации
         window.generatedCode = null;
-        switchModal('verifyModal', 'loginModal');
-    }
-    
-    function handleLogin(e) {
-        e.preventDefault();
-        const nickname = document.getElementById('loginNickname').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        let database = JSON.parse(localStorage.getItem('elite_players')) || {};
-        const account = database[nickname.toLowerCase()];
+        window.tempUserData = null;
+
+        function startVerification(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('regNickname').value.trim();
+            const contactType = document.getElementById('contactType').value;
+            const contact = document.getElementById('regContact').value.trim();
+            const password = document.getElementById('regPassword').value;
+            if (nickname.length < 3 || nickname.length > 20) {
+                document.getElementById('regNickError').style.display = 'block';
+                return;
+            }
+            
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+            if (database[nickname.toLowerCase()]) {
+                alert('Этот никнейм уже зарегистрирован!');
+                return;
+            }
+            
+            window.generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            window.tempUserData = { name: nickname, contact: contact, pass: password };
+            
+            alert(`Код подтверждения для ELITE RP: ${window.generatedCode}`);
+            document.getElementById('verifyText').innerText = `Код авторизации отправлен на ${contactType === 'email' ? 'E-mail' : 'телефон'}: ${contact}`;
+            switchModal('regModal', 'verifyModal');
+        }
         
-        if (account && account.pass === password) {
-            localStorage.setItem('elite_logged_in', account.name);
+        function completeRegister(e) {
+            e.preventDefault();
+            const userCode = document.getElementById('verifyCodeInput').value.trim();
+            const verifyError = document.getElementById('verifyError');
+            
+            if (userCode !== window.generatedCode) {
+                if (verifyError) verifyError.style.display = 'block';
+                return;
+            }
+            
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+            database[window.tempUserData.name.toLowerCase()] = window.tempUserData;
+            localStorage.setItem('elite_players', JSON.stringify(database));
+            
+            alert('Аккаунт успешно создан и подтвержден!');
+            document.getElementById('regForm').reset();
+            document.getElementById('verifyForm').reset();
+            
+            window.tempUserData = null;
+            window.generatedCode = null;
+            switchModal('verifyModal', 'loginModal');
+        }
+        
+        function handleLogin(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('loginNickname').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            let database = JSON.parse(localStorage.getItem('elite_players')) || {};
+            const account = database[nickname.toLowerCase()];
+            
+            if (account && account.pass === password) {
+                localStorage.setItem('elite_logged_in', account.name);
+                updateUI();
+                closeModal('loginModal');
+                document.getElementById('loginForm').reset();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+        
+        function updateUI() {
+            const loggedInUser = localStorage.getItem('elite_logged_in');
+            const authButtons = document.getElementById('authButtons');
+            const userPanel = document.getElementById('userPanel');
+            const usernameDisplay = document.getElementById('usernameDisplay');
+            
+            if (loggedInUser) {
+                if (authButtons) authButtons.style.display = 'none';
+                if (userPanel) userPanel.style.display = 'block';
+                if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
+            } else {
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userPanel) userPanel.style.display = 'none';
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('elite_logged_in');
             updateUI();
-            closeModal('loginModal');
-            document.getElementById('loginForm').reset();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
         }
-    }
-    
-    function updateUI() {
-        const loggedInUser = localStorage.getItem('elite_logged_in');
-        const authButtons = document.getElementById('authButtons');
-        const userPanel = document.getElementById('userPanel');
-        const usernameDisplay = document.getElementById('usernameDisplay');
         
-        if (loggedInUser) {
-            if (authButtons) authButtons.style.display = 'none';
-            if (userPanel) userPanel.style.display = 'block';
-            if (usernameDisplay) usernameDisplay.innerText = loggedInUser;
-        } else {
-            if (authButtons) authButtons.style.display = 'flex';
-            if (userPanel) userPanel.style.display = 'none';
-        }
-    }
-    
-    function logout() {
-        localStorage.removeItem('elite_logged_in');
-        updateUI();
-    }
-    
-    window.onload = updateUI;
-</script>
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
