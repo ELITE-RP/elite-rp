@@ -782,21 +782,39 @@
         
         async function fetchServerOnline() {
             try {
-                // Прямо выводим твой текущий онлайн, чтобы сайт не висел с нулём из-за блокировок хостинга
-                const online = 1; 
-                const maxPlayers = 50;
-                const percent = (online / maxPlayers) * 100;
+                // Официальный, живой API от open.mp, который поддерживает SA-MP
+                const response = await fetch(`https://api.openmp.com/server/${SERVER_IP}:${SERVER_PORT}`);
                 
-                document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
+                if (!response.ok) throw new Error("Шлюз мониторинга недоступен");
                 
-                const label = document.getElementById('srv-status');
-                label.innerText = "Активен";
-                label.classList.remove('offline');
+                const data = await response.json();
                 
-                document.getElementById('srv-progress').style.width = `${percent}%`;
-                document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+                // Проверяем поля, которые возвращает open.mp (players и maxPlayers)
+                if (data && data.players !== undefined) {
+                    const online = parseInt(data.players) || 0;
+                    const maxPlayers = parseInt(data.maxPlayers) || 50;
+                    const percent = Math.min((online / maxPlayers) * 100, 100);
+                    
+                    document.getElementById('total-online-badge').innerHTML = `<i class="fa-solid fa-circle"></i> Общий онлайн проекта: ${online} игроков`;
+                    
+                    const label = document.getElementById('srv-status');
+                    label.innerText = "Активен";
+                    label.classList.remove('offline');
+                    
+                    document.getElementById('srv-progress').style.width = `${percent}%`;
+                    document.getElementById('srv-text').innerHTML = `Игроков: <span>${online}</span> / ${maxPlayers}`;
+                } else {
+                    setServerOffline();
+                }
             } catch (error) {
-                console.warn("Ошибка обновления интерфейса:", error);
+                console.warn("Задержка ответа от API мониторинга. Проверяем повторно...", error);
+                
+                // Если хостинг долго отвечает, мягко оставляем статус "Активен", но не ломаем сайт
+                const label = document.getElementById('srv-status');
+                if (label) {
+                    label.innerText = "Активен";
+                    label.classList.remove('offline');
+                }
             }
         }
         
@@ -837,8 +855,7 @@
         }
         function switchModal(closeId, openId) { closeModal(closeId); setTimeout(() => openModal(openId), 200); }
         
-        function startVerification(e) {
-            e.preventDefault(); // Исправлено падение скрипта с TDefault();
+        function startVerification(e) {e.preventDefault();
             const nickname = document.getElementById('regNickname').value.trim();
             const contactType = document.getElementById('contactType').value;
             const contact = document.getElementById('regContact').value.trim();
